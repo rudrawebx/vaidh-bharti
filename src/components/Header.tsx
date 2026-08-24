@@ -44,7 +44,7 @@ export function Header() {
       <div className="container-vb flex items-center justify-between gap-4 py-3">
         <Link to="/" className="flex shrink-0 items-center" aria-label={`${BRAND.name} — home`}>
           <img
-            src={logo.url}
+            src={logo}
             alt={`${BRAND.name} — ${BRAND.tagline}`}
             width={168}
             height={112}

@@ -117,7 +117,7 @@ export function Header() {
       {open ? (
         <div className="fixed inset-0 z-50 flex flex-col bg-background xl:hidden">
           <div className="container-vb flex items-center justify-between py-3">
-            <img src={logo.url} alt="" width={140} height={94} className="h-11 w-auto" />
+            <img src={logo} alt="" width={140} height={94} className="h-11 w-auto" />
             <button
               type="button"
               onClick={() => setOpen(false)}

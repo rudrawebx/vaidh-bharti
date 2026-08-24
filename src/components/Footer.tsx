@@ -25,7 +25,7 @@ export function Footer() {
       <div className="container-vb grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <img
-            src={logo.url}
+            src={logo}
             alt={`${BRAND.name} logo`}
             width={210}
             height={140}

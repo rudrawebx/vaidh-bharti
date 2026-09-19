@@ -18,15 +18,47 @@ export type EnquiryInput = z.infer<typeof enquirySchema>;
 export const submitEnquiry = createServerFn({ method: "POST" })
   .inputValidator((data: EnquiryInput) => enquirySchema.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("enquiries").insert({
-      name: data.name,
-      phone: data.phone,
-      email: data.email || null,
-      enquiry_type: data.enquiryType,
-      subject: data.subject || null,
-      message: data.message,
-    });
-    if (error) throw new Error("Could not save your enquiry. Please try again or call us.");
-    return { ok: true as const };
+    // 1. Save to Supabase if configured
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await supabaseAdmin.from("enquiries").insert({
+        name: data.name,
+        phone: data.phone,
+        email: data.email || null,
+        enquiry_type: data.enquiryType,
+        subject: data.subject || null,
+        message: data.message,
+      });
+    } catch (e) {
+      console.warn("[Enquiry] Database save error, continuing with email notification:", e);
+    }
+
+    // 2. Dispatch email notification
+    try {
+      const { sendClinicEmailNotification } = await import("./notifications.server");
+      const emailSubject = `New Patient Enquiry: ${data.name} (${data.enquiryType})`;
+      const emailBody = `
+New Enquiry from Vaidh Bharti Website:
+----------------------------------------
+Name: ${data.name}
+Phone: ${data.phone}
+Email: ${data.email || "Not provided"}
+Consultation / Service: ${data.enquiryType}
+Subject: ${data.subject || "General Enquiry"}
+Message:
+${data.message}
+----------------------------------------
+Received: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST
+      `.trim();
+      await sendClinicEmailNotification({ subject: emailSubject, body: emailBody });
+    } catch (err) {
+      console.error("[Enquiry] Email notification dispatch failed:", err);
+    }
+
+    return {
+      ok: true as const,
+      whatsappText: encodeURIComponent(
+        `Namaste Vaidh Bharti, I have submitted an enquiry:\nName: ${data.name}\nPhone: ${data.phone}\nService: ${data.enquiryType}\nMessage: ${data.message}`,
+      ),
+    };
   });

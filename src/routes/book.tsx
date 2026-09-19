@@ -60,9 +60,14 @@ function BookPage() {
   const [type, setType] = React.useState("Ayurvedic Consultation");
   const [form, setForm] = React.useState({ name: "", phone: "", email: "", message: "" });
   const [busy, setBusy] = React.useState(false);
-  const [confirmed, setConfirmed] = React.useState<
-    { reference: string; booking_date: string; slot_time: string; amount: number } | null
-  >(null);
+  const [confirmed, setConfirmed] = React.useState<{
+    reference: string;
+    booking_date: string;
+    slot_time: string;
+    amount: number;
+    payAtClinic?: boolean;
+    whatsappText?: string;
+  } | null>(null);
 
   const availability = useQuery({
     queryKey: ["availability", date],
@@ -70,7 +75,6 @@ function BookPage() {
   });
 
   const fee = useQuery({ queryKey: ["consultation-fee"], queryFn: () => getConsultationFee() });
-
 
   React.useEffect(() => setSlot(null), [date]);
   React.useEffect(() => {
@@ -97,6 +101,21 @@ function BookPage() {
           userId: user?.id ?? null,
         },
       });
+
+      if (res.payAtClinic || !res.razorpay) {
+        setConfirmed({
+          reference: res.reference,
+          booking_date: res.booking_date,
+          slot_time: res.slot_time,
+          amount: res.amount,
+          payAtClinic: true,
+          whatsappText: res.whatsappText,
+        });
+        toast.success("Your appointment is reserved!");
+        void availability.refetch();
+        setBusy(false);
+        return;
+      }
 
       const ok = await loadRazorpay();
       if (!ok) {
@@ -135,6 +154,8 @@ function BookPage() {
               booking_date: res.booking_date,
               slot_time: res.slot_time,
               amount: res.amount,
+              payAtClinic: false,
+              whatsappText: res.whatsappText,
             });
             void availability.refetch();
           } catch {
@@ -153,6 +174,13 @@ function BookPage() {
   };
 
   if (confirmed) {
+    const waUrl = `https://wa.me/${site.phone.replace("+", "")}?text=${
+      confirmed.whatsappText ||
+      encodeURIComponent(
+        `Namaste Vaidh Bharti, I have booked a consultation.\nRef: ${confirmed.reference}\nDate: ${confirmed.booking_date} at ${confirmed.slot_time}`,
+      )
+    }`;
+
     return (
       <section className="py-24">
         <Container>
@@ -162,19 +190,31 @@ function BookPage() {
             <p className="mt-4 text-sm text-muted-foreground">
               Reference <span className="font-semibold text-foreground">{confirmed.reference}</span> ·{" "}
               {new Date(`${confirmed.booking_date}T00:00:00`).toLocaleDateString("en-IN", { dateStyle: "full" })} at{" "}
-              {confirmed.slot_time}. We will call you to confirm.
+              {confirmed.slot_time}. Our clinic team will call you to confirm.
             </p>
-            <p className="mt-2 text-sm font-semibold text-foreground">Paid {inr(confirmed.amount)}</p>
-            <p className="mt-6 text-sm text-muted-foreground">
-              Need to change it? Call{" "}
-              <a href={telHref} className="text-gold">
-                {site.phoneDisplay}
-              </a>{" "}
-              or{" "}
-              <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="text-gold">
-                message on WhatsApp
+            <p className="mt-2 text-sm font-semibold text-foreground">
+              {confirmed.payAtClinic ? `Fee ${inr(confirmed.amount)} (Pay at Clinic)` : `Paid ${inr(confirmed.amount)}`}
+            </p>
+
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-sm bg-[#25D366] px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-sm hover:bg-[#20bd5a] transition-colors"
+              >
+                Confirm on WhatsApp
               </a>
-              .
+              <a
+                href={telHref}
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-sm border border-border bg-card px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.12em] text-foreground hover:border-gold transition-colors"
+              >
+                Call Clinic ({site.phoneDisplay})
+              </a>
+            </div>
+
+            <p className="mt-8 text-xs text-muted-foreground">
+              Need to reschedule or have questions? Contact us on WhatsApp or call during clinic hours.
             </p>
           </div>
         </Container>

@@ -366,6 +366,7 @@ function InfoCard({
 function ContactForm() {
   const [errors, setErrors] = React.useState<Errors>({});
   const [status, setStatus] = React.useState<"idle" | "loading" | "success" | "error">("idle");
+  const [waLink, setWaLink] = React.useState<string | null>(null);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -387,8 +388,9 @@ function ContactForm() {
     setErrors({});
     setStatus("loading");
     try {
-      await submitEnquiry({ data: parsed.data });
+      const res = await submitEnquiry({ data: parsed.data });
       setStatus("success");
+      setWaLink(`https://wa.me/${site.phone.replace("+", "")}?text=${res.whatsappText}`);
       form.reset();
       toast.success("Thank you — your enquiry has been received.");
     } catch {
@@ -436,22 +438,44 @@ function ContactForm() {
         {errors["message"] ? <p className="mt-2 text-xs text-destructive">{errors["message"]}</p> : null}
       </div>
 
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-sm bg-primary px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-forest-deep disabled:opacity-60 sm:w-auto"
-      >
-        {status === "loading" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-        {status === "loading" ? "Sending…" : "Send Enquiry"}
-      </button>
+      {status === "success" && (
+        <div className="rounded-sm border border-emerald-200 bg-emerald-50/80 p-5 text-emerald-900">
+          <p className="font-medium text-base">Thank you! Your enquiry has been received.</p>
+          <p className="mt-1 text-xs text-emerald-800">
+            Our team will contact you during working hours. You can also connect immediately on WhatsApp.
+          </p>
+          {waLink && (
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-sm bg-[#25D366] px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#20bd5a] transition-colors"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Confirm on WhatsApp
+            </a>
+          )}
+        </div>
+      )}
 
-      <p aria-live="polite" className={cn("text-xs", status === "error" ? "text-destructive" : "text-muted-foreground")}>
-        {status === "success"
-          ? "Your enquiry has been received. Our team will contact you during working hours."
-          : status === "error"
-            ? "We could not send your enquiry. Please call or WhatsApp us."
-            : "We usually respond during working hours, Monday to Saturday."}
-      </p>
+      {status !== "success" && (
+        <>
+          <button
+            type="submit"
+            disabled={status === "loading"}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-sm bg-primary px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-forest-deep disabled:opacity-60 sm:w-auto"
+          >
+            {status === "loading" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {status === "loading" ? "Sending…" : "Send Enquiry"}
+          </button>
+
+          <p aria-live="polite" className={cn("text-xs", status === "error" ? "text-destructive" : "text-muted-foreground")}>
+            {status === "error"
+              ? "We could not send your enquiry. Please call or WhatsApp us directly."
+              : "We usually respond during working hours, Monday to Saturday."}
+          </p>
+        </>
+      )}
     </form>
   );
 }

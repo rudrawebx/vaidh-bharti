@@ -44,11 +44,14 @@ function MobileGroup({ label, items, onNavigate }: { label: string; items: NavLe
 
 export function Brand({ compact = false }: { compact?: boolean; inverted?: boolean }) {
   return (
-    <Link to="/" className="group flex items-center" aria-label="Vaidh Bharti — Panchsheel Aarogya Dhaam, home">
+    <Link to="/" className="group flex items-center py-1" aria-label="Vaidh Bharti — Panchsheel Aarogya Dhaam, home">
       <img
         src={logo}
         alt="Vaidh Bharti"
-        className={cn("w-auto shrink-0 object-contain transition-all", compact ? "h-11" : "h-14")}
+        className={cn(
+          "w-auto shrink-0 object-contain transition-all duration-300",
+          compact ? "h-14 sm:h-16" : "h-16 sm:h-20 md:h-24",
+        )}
       />
     </Link>
   );
@@ -69,18 +72,13 @@ export function Header() {
 
   return (
     <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-500",
-        scrolled
-          ? "border-b border-border/70 bg-background/92 backdrop-blur-xl"
-          : "border-b border-transparent bg-background/70 backdrop-blur-sm",
-      )}
+      className="fixed inset-x-0 top-0 z-50 border-b border-border/80 bg-[#FAF7F2] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.06)] transition-all duration-300"
     >
       <Container>
         <div
           className={cn(
-            "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 transition-all duration-500 lg:flex lg:justify-between",
-            scrolled ? "h-16" : "h-20",
+            "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 transition-all duration-300 lg:flex lg:justify-between",
+            scrolled ? "h-20" : "h-24 md:h-28",
           )}
         >
           <Brand compact={scrolled} />
@@ -89,7 +87,7 @@ export function Header() {
             <Link
               to="/"
               activeOptions={{ exact: true }}
-              className="text-[13px] font-medium tracking-wide text-muted-foreground transition-colors hover:text-primary data-[status=active]:text-primary"
+              className="text-[14px] font-semibold tracking-wide text-foreground/80 transition-colors hover:text-primary data-[status=active]:text-primary"
             >
               Home
             </Link>
@@ -97,25 +95,25 @@ export function Header() {
             <NavDropdown label="Company" items={companyLinks} />
             <Link
               to="/products"
-              className="text-[13px] font-medium tracking-wide text-muted-foreground transition-colors hover:text-primary data-[status=active]:text-primary"
+              className="text-[14px] font-semibold tracking-wide text-foreground/80 transition-colors hover:text-primary data-[status=active]:text-primary"
             >
               Shop
             </Link>
             <Link
               to="/contact"
-              className="text-[13px] font-medium tracking-wide text-muted-foreground transition-colors hover:text-primary data-[status=active]:text-primary"
+              className="text-[14px] font-semibold tracking-wide text-foreground/80 transition-colors hover:text-primary data-[status=active]:text-primary"
             >
               Contact
             </Link>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <a
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Chat with us on WhatsApp"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border text-primary transition-colors hover:border-gold hover:text-gold"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border/80 bg-card text-primary transition-colors hover:border-gold hover:text-gold"
             >
               <WhatsAppIcon className="h-[18px] w-[18px]" />
             </a>
@@ -124,7 +122,7 @@ export function Header() {
               type="button"
               onClick={() => setOpen(true)}
               aria-label={`Open cart, ${count} item${count === 1 ? "" : "s"}`}
-              className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border text-primary transition-colors hover:border-gold hover:text-gold"
+              className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border/80 bg-card text-primary transition-colors hover:border-gold hover:text-gold"
             >
               <ShoppingBag className="h-[18px] w-[18px]" />
               {count > 0 ? (
@@ -137,7 +135,7 @@ export function Header() {
             <Link
               to="/account"
               aria-label="My account"
-              className="hidden h-10 w-10 shrink-0 place-items-center rounded-full border border-border text-primary transition-colors hover:border-gold hover:text-gold sm:grid"
+              className="hidden h-10 w-10 shrink-0 place-items-center rounded-full border border-border/80 bg-card text-primary transition-colors hover:border-gold hover:text-gold sm:grid"
             >
               <User className="h-[18px] w-[18px]" />
             </Link>
@@ -145,7 +143,7 @@ export function Header() {
             {isAdmin ? (
               <Link
                 to="/admin"
-                className="hidden shrink-0 items-center rounded-sm border border-border px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary transition-colors hover:border-gold hover:text-gold lg:inline-flex"
+                className="hidden shrink-0 items-center rounded-md border border-primary/30 px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-primary transition-colors hover:border-gold hover:text-gold lg:inline-flex"
               >
                 Admin
               </Link>
@@ -153,7 +151,7 @@ export function Header() {
 
             <Link
               to="/book"
-              className="hidden shrink-0 items-center rounded-sm bg-primary px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-forest-deep sm:inline-flex"
+              className="hidden shrink-0 items-center rounded-md bg-primary px-6 py-3 text-[12px] font-bold uppercase tracking-[0.14em] text-primary-foreground shadow-sm transition-all hover:bg-forest-deep hover:shadow-md sm:inline-flex"
             >
               Book Consultation
             </Link>

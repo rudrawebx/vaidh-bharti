@@ -49,7 +49,22 @@ async function priceCart(
 
   const lines: PricedCart["lines"] = [];
   for (const item of items) {
-    const p = (rows ?? []).find((r: any) => r.slug === item.slug);
+    let p = (rows ?? []).find((r: any) => r.slug === item.slug);
+    if (!p) {
+      const { getFallbackProducts } = await import("./catalog.functions");
+      const fb = getFallbackProducts().find((x) => x.slug === item.slug);
+      if (fb) {
+        p = {
+          id: fb.id,
+          slug: fb.slug,
+          name: fb.name,
+          price: fb.price,
+          images: fb.images,
+          stock: fb.stock,
+          product_variants: fb.variants,
+        };
+      }
+    }
     if (!p) throw new Error(`Product not available: ${item.slug}`);
     let unitPrice: number | null = p.price === null ? null : Number(p.price);
     let label: string | null = null;
@@ -148,45 +163,92 @@ export const placeOrder = createServerFn({ method: "POST" })
     const c = data.customer;
     const number = orderNumber();
 
-    const { data: order, error } = await supabaseAdmin
-      .from("orders")
-      .insert({
-        order_number: number,
-        user_id: data.userId ?? null,
-        customer_name: c.name,
-        email: c.email || null,
-        phone: c.phone,
-        address_line1: c.address1,
-        address_line2: c.address2 || null,
-        city: c.city,
-        state: c.state,
-        pincode: c.pincode,
-        subtotal: priced.subtotal,
-        shipping_amount: priced.shipping,
-        discount_amount: priced.discount,
-        total: priced.total,
-        coupon_code: priced.couponCode,
-        payment_method: data.paymentMethod,
-        payment_status: "pending",
-        status: "pending",
-        notes: c.notes || null,
-      })
-      .select("id,order_number,total")
-      .single();
-    if (error || !order) throw new Error(error?.message ?? "Could not create the order");
+    let orderRecord = {
+      id: "local-" + number,
+      order_number: number,
+      total: priced.total,
+    };
 
-    await supabaseAdmin.from("order_items").insert(
-      priced.lines.map((l) => ({
-        order_id: order.id,
-        product_id: l.productId,
-        product_name: l.name,
-        product_slug: l.slug,
-        variant_label: l.variantLabel,
-        unit_price: l.unitPrice,
-        quantity: l.qty,
-        image_url: l.image,
-      })),
-    );
+    try {
+      const { data: order, error } = await supabaseAdmin
+        .from("orders")
+        .insert({
+          order_number: number,
+          user_id: data.userId ?? null,
+          customer_name: c.name,
+          email: c.email || null,
+          phone: c.phone,
+          address_line1: c.address1,
+          address_line2: c.address2 || null,
+          city: c.city,
+          state: c.state,
+          pincode: c.pincode,
+          subtotal: priced.subtotal,
+          shipping_amount: priced.shipping,
+          discount_amount: priced.discount,
+          total: priced.total,
+          coupon_code: priced.couponCode,
+          payment_method: data.paymentMethod,
+          payment_status: data.paymentMethod === "cod" ? "cod_pending" : "pending",
+          status: "pending",
+          notes: c.notes || null,
+        })
+        .select("id,order_number,total")
+        .single();
+      if (!error && order) {
+        orderRecord = order;
+        await supabaseAdmin.from("order_items").insert(
+          priced.lines.map((l) => ({
+            order_id: order.id,
+            product_id: l.productId,
+            product_name: l.name,
+            product_slug: l.slug,
+            variant_label: l.variantLabel,
+            unit_price: l.unitPrice,
+            quantity: l.qty,
+            image_url: l.image,
+          })),
+        );
+      }
+    } catch (dbErr) {
+      console.warn("Could not save order to database:", dbErr);
+    }
+
+    // Dispatch clinic email notification to vaidbharti80@gmail.com and rudrawebx@gmail.com
+    try {
+      const { sendClinicEmailNotification } = await import("./notifications.server");
+      const itemsList = priced.lines
+        .map((l) => `- ${l.name} (${l.variantLabel || "Standard"}) x ${l.qty} = ₹${l.unitPrice * l.qty}`)
+        .join("\n");
+      await sendClinicEmailNotification({
+        subject: `New Product Order: ${orderRecord.order_number} (${c.name})`,
+        body: `
+New Order Received on Vaidh Bharti Website:
+-----------------------------------------------------------
+Order Number: ${orderRecord.order_number}
+Customer Name: ${c.name}
+Phone: ${c.phone}
+Email: ${c.email || "Not provided"}
+Delivery Address:
+${c.address1} ${c.address2 || ""}
+${c.city}, ${c.state} - ${c.pincode}
+
+Items Ordered:
+${itemsList}
+
+Subtotal: ₹${priced.subtotal}
+Shipping: ₹${priced.shipping}
+Discount: ₹${priced.discount}
+Total Amount: ₹${priced.total}
+Payment Method: ${data.paymentMethod.toUpperCase()}
+Customer Notes: ${c.notes || "None"}
+-----------------------------------------------------------
+Order Placed at: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST
+        `.trim(),
+      });
+    } catch (err) {
+      console.error("Order email notification error:", err);
+    }
 
     let razorpay: { orderId: string; keyId: string; amount: number } | null = null;
     if (data.paymentMethod === "razorpay") {
@@ -200,18 +262,20 @@ export const placeOrder = createServerFn({ method: "POST" })
           Authorization: `Basic ${btoa(`${keyId}:${keySecret}`)}`,
         },
         body: JSON.stringify({
-          amount: Math.round(Number(order.total) * 100),
+          amount: Math.round(Number(orderRecord.total) * 100),
           currency: "INR",
-          receipt: order.order_number,
+          receipt: orderRecord.order_number,
         }),
       });
       if (!res.ok) throw new Error("Payment gateway could not start this payment. Please try again.");
       const rp = (await res.json()) as { id: string; amount: number };
-      await supabaseAdmin.from("orders").update({ razorpay_order_id: rp.id }).eq("id", order.id);
+      try {
+        await supabaseAdmin.from("orders").update({ razorpay_order_id: rp.id }).eq("id", orderRecord.id);
+      } catch {}
       razorpay = { orderId: rp.id, keyId, amount: rp.amount };
     }
 
-    return { orderNumber: order.order_number, total: Number(order.total), razorpay };
+    return { orderNumber: orderRecord.order_number, total: Number(orderRecord.total), razorpay };
   });
 
 export const confirmPayment = createServerFn({ method: "POST" })

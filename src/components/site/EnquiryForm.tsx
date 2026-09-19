@@ -1,7 +1,9 @@
 import * as React from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, MessageCircle } from "lucide-react";
+import { submitEnquiry } from "@/lib/enquiries.functions";
+import { site } from "@/lib/site";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Please enter your name").max(80, "Name is too long"),
@@ -30,6 +32,7 @@ type Errors = Partial<Record<keyof z.infer<typeof schema>, string>>;
 export function EnquiryForm({ compact = false }: { compact?: boolean }) {
   const [errors, setErrors] = React.useState<Errors>({});
   const [status, setStatus] = React.useState<"idle" | "loading" | "success">("idle");
+  const [waLink, setWaLink] = React.useState<string | null>(null);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,12 +53,27 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
 
     setErrors({});
     setStatus("loading");
-    await new Promise((r) => setTimeout(r, 900));
-    setStatus("success");
-    form.reset();
-    toast.success("Thank you — your enquiry has been noted.", {
-      description: "Email delivery is not connected yet. Please also call or WhatsApp us to confirm your appointment.",
-    });
+    try {
+      const res = await submitEnquiry({
+        data: {
+          name: parsed.data.name,
+          phone: parsed.data.phone,
+          email: parsed.data.email || "",
+          enquiryType: parsed.data.topic || "General Consultation",
+          subject: `Website Enquiry: ${parsed.data.topic || "Consultation"}`,
+          message: parsed.data.message,
+        },
+      });
+      setStatus("success");
+      setWaLink(`https://wa.me/${site.phone.replace("+", "")}?text=${res.whatsappText}`);
+      form.reset();
+      toast.success("Thank you! Your enquiry has been received.", {
+        description: "Our doctors will review your details and contact you promptly.",
+      });
+    } catch {
+      setStatus("idle");
+      toast.error("Could not send enquiry right now. Please message on WhatsApp or call directly.");
+    }
   };
 
   return (
@@ -98,20 +116,47 @@ export function EnquiryForm({ compact = false }: { compact?: boolean }) {
         {errors.message ? <p className="mt-2 text-xs text-destructive">{errors.message}</p> : null}
       </div>
 
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-sm bg-primary px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-forest-deep disabled:opacity-60 sm:w-auto"
-      >
-        {status === "loading" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-        {status === "loading" ? "Sending…" : "Request a Consultation"}
-      </button>
+      {status === "success" && (
+        <div className="rounded-sm border border-emerald-200 bg-emerald-50/80 p-4 text-emerald-900">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+            <div className="space-y-2">
+              <p className="font-medium text-sm">Thank you! Your enquiry has been received.</p>
+              <p className="text-xs text-emerald-800">
+                Our clinic team will review your enquiry and contact you promptly. You can also connect directly on WhatsApp for instant confirmation.
+              </p>
+              {waLink && (
+                <a
+                  href={waLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-sm bg-[#25D366] px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#20bd5a] transition-colors"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Confirm on WhatsApp
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
-      <p aria-live="polite" className="text-xs text-muted-foreground">
-        {status === "success"
-          ? "Your enquiry has been noted. Email delivery is not connected yet — please also call or WhatsApp us to confirm."
-          : "We usually respond during working hours, Monday to Saturday."}
-      </p>
+      {status !== "success" && (
+        <>
+          <button
+            type="submit"
+            disabled={status === "loading"}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-sm bg-primary px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-forest-deep disabled:opacity-60 sm:w-auto"
+          >
+            {status === "loading" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {status === "loading" ? "Sending…" : "Request a Consultation"}
+          </button>
+
+          <p aria-live="polite" className="text-xs text-muted-foreground">
+            We usually respond during working hours, Monday to Saturday.
+          </p>
+        </>
+      )}
     </form>
   );
 }

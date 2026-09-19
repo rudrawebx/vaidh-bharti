@@ -1,9 +1,9 @@
-import portrait from "@/assets/portrait.jpg.asset.json";
-import oilsImg from "@/assets/prod-oils.png.asset.json";
-import powderImg from "@/assets/prod-powder.png.asset.json";
-import shilajitImg from "@/assets/prod-shilajit.png.asset.json";
-import capsulesImg from "@/assets/prod-capsules.png.asset.json";
-import skinImg from "@/assets/prod-skin.png.asset.json";
+import portrait from "@/assets/portrait.jpg";
+import oilsImg from "@/assets/prod-oils.png";
+import powderImg from "@/assets/prod-powder.png";
+import shilajitImg from "@/assets/prod-shilajit.png";
+import capsulesImg from "@/assets/prod-capsules.png";
+import skinImg from "@/assets/prod-skin.png";
 
 export const site = {
   name: "Vaidh Bharti",
@@ -32,7 +32,7 @@ export const telHref = `tel:${site.phone}`;
 export const mapsHref = `https://www.google.com/maps/search/?api=1&query=${site.mapQuery}`;
 export const mapEmbed = `https://www.google.com/maps?q=${site.mapQuery}&output=embed`;
 
-export const portraitUrl = portrait.url;
+export const portraitUrl = portrait;
 
 export const nav = [
   { label: "Home", to: "/" },
@@ -197,7 +197,7 @@ export const products: Product[] = [
     ],
     ingredients: "Herbal hair oil with red onion. The full ingredient list is printed on the product label.",
     usage: "Apply to the scalp and hair, massage gently and leave for the time advised on the label. External use only.",
-    image: oilsImg.url,
+    image: oilsImg,
   },
   {
     slug: "uder-shaant-powder",
@@ -213,7 +213,7 @@ export const products: Product[] = [
     ],
     ingredients: "Classically processed Ayurvedic herbs. The full ingredient list is printed on the product label.",
     usage: "Take as advised by your Ayurvedic practitioner, usually with warm water.",
-    image: powderImg.url,
+    image: powderImg,
   },
   {
     slug: "himalayan-suryatapi-pure-shilajit",
@@ -229,7 +229,7 @@ export const products: Product[] = [
     ],
     ingredients: "Purified Shilajit resin. Full details are printed on the product label.",
     usage: "Dissolve a small quantity (as advised) in warm water or milk. Use only as directed.",
-    image: shilajitImg.url,
+    image: shilajitImg,
   },
   {
     slug: "shakti-panch-gold-extra",
@@ -245,7 +245,7 @@ export const products: Product[] = [
     ],
     ingredients: "Ayurvedic herbal ingredients. The full ingredient list is printed on the product label.",
     usage: "Take as advised by your Ayurvedic practitioner.",
-    image: capsulesImg.url,
+    image: capsulesImg,
   },
   {
     slug: "saffron-herbal-cream",
@@ -262,7 +262,7 @@ export const products: Product[] = [
     ingredients:
       "Saffron with a herbal skin-care base including coconut, almond, jojoba and lotus derived ingredients. The full ingredient list is printed on the product label.",
     usage: "Apply a small amount to clean skin and massage gently. Discontinue if irritation occurs.",
-    image: skinImg.url,
+    image: skinImg,
   },
 ];
 

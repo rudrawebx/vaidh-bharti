@@ -91,7 +91,7 @@ function Home() {
 
 function Hero() {
   return (
-    <section className="relative -mt-20 flex min-h-[92svh] items-end overflow-hidden pt-28">
+    <section className="relative flex min-h-[88svh] items-end overflow-hidden">
       <img
         src={herbs}
         alt="Traditional Ayurvedic herbs, roots and brass vessels arranged on dark wood"
@@ -100,7 +100,7 @@ function Hero() {
         className="absolute inset-0 h-full w-full object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/85 to-forest-deep/45" />
-      <Container className="relative pb-16 pt-16 sm:pb-24">
+      <Container className="relative pb-16 pt-16 sm:pb-24 sm:pt-20">
         <div className="max-w-3xl">
           <p className="eyebrow flex items-center gap-3 text-gold">
             <span aria-hidden className="inline-block h-px w-10 bg-gold/70" />

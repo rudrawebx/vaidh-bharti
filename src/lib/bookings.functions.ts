@@ -56,10 +56,31 @@ export const getConsultationFee = createServerFn({ method: "GET" }).handler(asyn
 export const getAvailability = createServerFn({ method: "GET" })
   .inputValidator((data: { date: string }) => data)
   .handler(async ({ data }) => {
-    const { publicClient } = await import("./supabase-public.server");
-    const supabase = publicClient();
-    const { data: settings } = await supabase.from("booking_settings").select("*").maybeSingle();
-    if (!settings) return { slots: [], types: [], closed: true };
+    let settings = {
+      start_time: "10:00",
+      end_time: "18:00",
+      slot_minutes: 30,
+      working_days: [1, 2, 3, 4, 5, 6],
+      blocked_dates: [] as string[],
+      blocked_slots: [] as string[],
+      consultation_types: [
+        "Nadi Pariksha & Pulse Assessment",
+        "Personalized Ayurvedic Consultation",
+        "Panchakarma Guidance & Detox",
+        "Ayurvedic Lifestyle & Diet Consultation",
+      ],
+    };
+
+    try {
+      const { publicClient } = await import("./supabase-public.server");
+      const supabase = publicClient();
+      const { data: dbSettings } = await supabase.from("booking_settings").select("*").maybeSingle();
+      if (dbSettings) {
+        settings = { ...settings, ...dbSettings };
+      }
+    } catch (err) {
+      console.warn("Could not query booking_settings, using defaults:", err);
+    }
 
     const day = new Date(`${data.date}T00:00:00`).getDay();
     const workingDays = settings.working_days ?? [1, 2, 3, 4, 5, 6];
@@ -67,14 +88,21 @@ export const getAvailability = createServerFn({ method: "GET" })
     const closed = !workingDays.includes(day) || blockedDates.includes(data.date);
 
     const all = buildSlots(settings.start_time, settings.end_time, settings.slot_minutes);
-    await clearAbandonedHolds();
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: booked } = await supabaseAdmin
-      .from("bookings")
-      .select("slot_time")
-      .eq("booking_date", data.date)
-      .neq("status", "cancelled");
-    const taken = new Set((booked ?? []).map((b) => b.slot_time.slice(0, 5)));
+    try {
+      await clearAbandonedHolds();
+    } catch {}
+
+    let taken = new Set<string>();
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: booked } = await supabaseAdmin
+        .from("bookings")
+        .select("slot_time")
+        .eq("booking_date", data.date)
+        .neq("status", "cancelled");
+      taken = new Set((booked ?? []).map((b) => b.slot_time.slice(0, 5)));
+    } catch {}
+
     const blockedSlots = new Set(settings.blocked_slots ?? []);
     const now = new Date();
     const isToday = data.date === now.toISOString().slice(0, 10);
@@ -97,63 +125,133 @@ export const getAvailability = createServerFn({ method: "GET" })
 export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => bookingSchema.parse(data))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await clearAbandonedHolds();
-
-    const { data: feeRow } = await supabaseAdmin
-      .from("site_settings")
-      .select("value")
-      .eq("key", "consultation")
-      .maybeSingle();
-    const v = (feeRow?.value ?? {}) as { fee?: number; gst_percent?: number };
-    const fee = Number(v.fee ?? 300);
-    const gstPercent = Number(v.gst_percent ?? 18);
-    const amount = fee + Math.round((fee * gstPercent) / 100);
-
-    const keyId = process.env["RAZORPAY_KEY_ID"];
-    const keySecret = process.env["RAZORPAY_KEY_SECRET"];
-    if (!keyId || !keySecret) {
-      throw new Error("Online payment is not available right now. Please call us to book your consultation.");
-    }
+    let amount = 354;
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await clearAbandonedHolds();
+      const { data: feeRow } = await supabaseAdmin
+        .from("site_settings")
+        .select("value")
+        .eq("key", "consultation")
+        .maybeSingle();
+      const v = (feeRow?.value ?? {}) as { fee?: number; gst_percent?: number };
+      const fee = Number(v.fee ?? 300);
+      const gstPercent = Number(v.gst_percent ?? 18);
+      amount = fee + Math.round((fee * gstPercent) / 100);
+    } catch {}
 
     const reference = `VBC-${Math.floor(100000 + Math.random() * 900000)}`;
-    const { data: row, error } = await supabaseAdmin
-      .from("bookings")
-      .insert({
-        user_id: data.userId ?? null,
-        reference,
-        consultation_type: data.consultationType,
-        booking_date: data.date,
-        slot_time: data.slot,
-        customer_name: data.name,
-        phone: data.phone,
-        email: data.email || null,
-        message: data.message || null,
-        status: "pending",
-        payment_status: "pending",
-        amount,
-      })
-      .select("id,reference,booking_date,slot_time,consultation_type")
-      .single();
-    if (error || !row) {
-      if (error?.code === "23505") throw new Error("That time was just taken. Please choose another slot.");
-      throw new Error(error?.message ?? "Could not start this booking.");
+    const keyId = process.env["RAZORPAY_KEY_ID"];
+    const keySecret = process.env["RAZORPAY_KEY_SECRET"];
+    const isRazorpayConfigured = Boolean(keyId && keySecret);
+
+    let row = {
+      id: "local-" + reference,
+      reference,
+      booking_date: data.date,
+      slot_time: data.slot,
+      consultation_type: data.consultationType,
+    };
+
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: dbRow, error } = await supabaseAdmin
+        .from("bookings")
+        .insert({
+          user_id: data.userId ?? null,
+          reference,
+          consultation_type: data.consultationType,
+          booking_date: data.date,
+          slot_time: data.slot,
+          customer_name: data.name,
+          phone: data.phone,
+          email: data.email || null,
+          message: data.message || null,
+          status: isRazorpayConfigured ? "pending" : "confirmed",
+          payment_status: isRazorpayConfigured ? "pending" : "pay_at_clinic",
+          amount,
+        })
+        .select("id,reference,booking_date,slot_time,consultation_type")
+        .single();
+      if (!error && dbRow) {
+        row = dbRow;
+      }
+    } catch (err) {
+      console.warn("Could not write booking to Supabase, continuing:", err);
     }
 
-    const res = await fetch("https://api.razorpay.com/v1/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${btoa(`${keyId}:${keySecret}`)}`,
-      },
-      body: JSON.stringify({ amount: Math.round(amount * 100), currency: "INR", receipt: reference }),
-    });
-    if (!res.ok) {
-      await supabaseAdmin.from("bookings").delete().eq("id", row.id);
-      throw new Error("Payment could not be started. Please try again.");
+    // Send clinic email notification
+    try {
+      const { sendClinicEmailNotification } = await import("./notifications.server");
+      await sendClinicEmailNotification({
+        subject: `New Consultation Booking: ${data.name} (${row.reference})`,
+        body: `
+New Appointment Booking at Panchsheel Aarogya Dhaam (Vaidh Bharti):
+-----------------------------------------------------------
+Reference: ${row.reference}
+Patient Name: ${data.name}
+Phone: ${data.phone}
+Email: ${data.email || "Not provided"}
+Consultation Type: ${data.consultationType}
+Appointment Date: ${data.date}
+Time Slot: ${data.slot}
+Fee: ₹${amount} (${isRazorpayConfigured ? "Payment Online (Pending)" : "Pay at Clinic"})
+Notes / Health Concern: ${data.message || "None"}
+-----------------------------------------------------------
+Booked at: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })} IST
+        `.trim(),
+      });
+    } catch (err) {
+      console.error("Clinic notification email error:", err);
     }
-    const rp = (await res.json()) as { id: string; amount: number };
-    await supabaseAdmin.from("bookings").update({ razorpay_order_id: rp.id }).eq("id", row.id);
+
+    const whatsappText = encodeURIComponent(
+      `Namaste Vaidh Bharti, I have booked a consultation.\nRef: ${row.reference}\nName: ${data.name}\nService: ${data.consultationType}\nDate: ${data.date} at ${data.slot}`,
+    );
+
+    if (!isRazorpayConfigured) {
+      return {
+        reference: row.reference,
+        booking_date: row.booking_date,
+        slot_time: row.slot_time,
+        consultation_type: row.consultation_type,
+        amount,
+        payAtClinic: true,
+        whatsappText,
+        razorpay: null,
+      };
+    }
+
+    // Initiate Razorpay order
+    try {
+      const res = await fetch("https://api.razorpay.com/v1/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${btoa(`${keyId}:${keySecret}`)}`,
+        },
+        body: JSON.stringify({ amount: Math.round(amount * 100), currency: "INR", receipt: reference }),
+      });
+      if (res.ok) {
+        const rp = (await res.json()) as { id: string; amount: number };
+        try {
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          await supabaseAdmin.from("bookings").update({ razorpay_order_id: rp.id }).eq("id", row.id);
+        } catch {}
+        return {
+          reference: row.reference,
+          booking_date: row.booking_date,
+          slot_time: row.slot_time,
+          consultation_type: row.consultation_type,
+          amount,
+          payAtClinic: false,
+          whatsappText,
+          razorpay: { orderId: rp.id, keyId, amount: rp.amount },
+        };
+      }
+    } catch (e) {
+      console.warn("Razorpay order creation failed, falling back to pay-at-clinic:", e);
+    }
 
     return {
       reference: row.reference,
@@ -161,7 +259,9 @@ export const createBooking = createServerFn({ method: "POST" })
       slot_time: row.slot_time,
       consultation_type: row.consultation_type,
       amount,
-      razorpay: { orderId: rp.id, keyId, amount: rp.amount },
+      payAtClinic: true,
+      whatsappText,
+      razorpay: null,
     };
   });
 

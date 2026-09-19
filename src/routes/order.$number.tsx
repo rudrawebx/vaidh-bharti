@@ -29,6 +29,16 @@ function OrderConfirmed() {
             will call you on the number you provided to confirm dispatch.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <a
+              href={`https://wa.me/${site.phone.replace("+", "")}?text=${encodeURIComponent(
+                `Namaste Vaidh Bharti, I have placed an order on your website. My Order ID is ${number}. Please confirm dispatch.`,
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-sm bg-[#25D366] px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-white shadow-sm hover:bg-[#20bd5a] transition-colors"
+            >
+              Confirm on WhatsApp
+            </a>
             <Link
               to="/track-order"
               className="rounded-sm bg-primary px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground"

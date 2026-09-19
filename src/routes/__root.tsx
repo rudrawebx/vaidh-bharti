@@ -91,7 +91,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "Vaidh Bharti" },
       { property: "og:site_name", content: "Vaidh Bharti — Panchsheel Aarogya Dhaam" },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://vaidh-bharti.vercel.app/logo.png" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://vaidh-bharti.vercel.app/logo.png" },
+      { name: "robots", content: "index, follow" },
       { name: "theme-color", content: "#2f4438" },
     ],
     links: [
@@ -170,7 +173,7 @@ function RootComponent() {
           Skip to content
         </a>
         <Header />
-        <main id="main" className="pt-20">
+        <main id="main" className="pt-24 lg:pt-28">
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
         </main>

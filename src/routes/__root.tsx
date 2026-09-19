@@ -86,9 +86,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Traditional Ayurvedic consultation, Nadi Pariksha, Panchakarma and herbal formulations with Vaidh Bharti at Panchsheel Aarogya Dhaam, Hansi, Haryana.",
+          "Traditional Ayurvedic consultation, Nadi Pariksha, Panchakarma and herbal formulations with Vaidh Jitender Bharti at Panchsheel Aarogya Dhaam, Hansi, Haryana.",
       },
-      { name: "author", content: "Vaidh Bharti" },
+      { name: "author", content: "Vaidh Jitender Bharti" },
       { property: "og:site_name", content: "Vaidh Bharti — Panchsheel Aarogya Dhaam" },
       { property: "og:type", content: "website" },
       { property: "og:image", content: "https://vaidh-bharti.vercel.app/logo.png" },
@@ -117,7 +117,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           alternateName: "Vaidh Bharti",
           description:
             "Traditional Ayurvedic wellness centre offering consultation, Nadi Pariksha, Panchakarma and herbal formulations.",
-          founder: { "@type": "Person", name: "Vaidh Bharti" },
+          founder: { "@type": "Person", name: "Jitender Bharti", alternateName: "Vaidh Jitender Bharti" },
           telephone: site.phone,
           email: site.email,
           address: {

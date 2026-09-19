@@ -11,7 +11,7 @@ export const Route = createFileRoute("/testimonials")({
       {
         name: "description",
         content:
-          "Read what patients say about Ayurvedic consultation and Panchakarma with Vaidh Bharti at Panchsheel Aarogya Dhaam, Hansi, Haryana.",
+          "Read what patients say about Ayurvedic consultation and Panchakarma with Vaidh Jitender Bharti at Panchsheel Aarogya Dhaam, Hansi, Haryana.",
       },
       { property: "og:title", content: "Patient Stories — Vaidh Bharti, Panchsheel Aarogya Dhaam" },
       { property: "og:description", content: "Experiences shared by patients of Panchsheel Aarogya Dhaam." },

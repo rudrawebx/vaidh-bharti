@@ -9,7 +9,7 @@ export const Route = createFileRoute("/treatments/ayurvedic-consultation")({
       {
         name: "description",
         content:
-          "An unhurried Ayurvedic consultation with Vaidh Bharti covering assessment, herbal formulations, diet counselling and daily routine at Panchsheel Aarogya Dhaam, Hansi.",
+          "An unhurried Ayurvedic consultation with Vaidh Jitender Bharti covering assessment, herbal formulations, diet counselling and daily routine at Panchsheel Aarogya Dhaam, Hansi.",
       },
       { property: "og:title", content: "Ayurvedic Consultation in Hansi | Vaidh Bharti" },
       { property: "og:description", content: "Personalized Ayurvedic consultation and lifestyle guidance in Hansi, Haryana." },

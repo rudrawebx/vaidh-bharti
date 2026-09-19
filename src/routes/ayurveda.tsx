@@ -24,7 +24,7 @@ export const Route = createFileRoute("/ayurveda")({
       {
         name: "description",
         content:
-          "An introduction to Ayurveda — constitution, the three doshas, daily routine, diet and balance — explained simply by Vaidh Bharti of Panchsheel Aarogya Dhaam.",
+          "An introduction to Ayurveda — constitution, the three doshas, daily routine, diet and balance — explained simply by Vaidh Jitender Bharti of Panchsheel Aarogya Dhaam.",
       },
       { property: "og:title", content: "What Is Ayurveda? Doshas, Routine & Balance | Vaidh Bharti" },
       {

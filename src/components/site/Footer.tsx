@@ -54,8 +54,8 @@ export function Footer() {
               />
             </Link>
             <p className="max-w-sm text-base leading-relaxed text-muted-foreground">
-              Classical Ayurvedic care in Hansi, Haryana — personalized consultation, Panchakarma and traditional
-              herbal formulations, offered with patience and care.
+              Classical Ayurvedic care in Hansi, Haryana — founded and directed by Vaidh Jitender Bharti at
+              Panchsheel Aarogya Dhaam. Personalized consultation, Panchakarma and traditional herbal formulations.
             </p>
             <p className="font-display text-lg italic text-primary">“{site.tagline}”</p>
             <div className="flex items-center gap-3">
@@ -133,7 +133,7 @@ export function Footer() {
 
         <div className="mt-14 flex flex-col gap-3 border-t border-border pt-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Vaidh Bharti. All Rights Reserved.</p>
-          <p className="text-muted-foreground/80">{site.centre} · {site.address.line3}</p>
+          <p className="text-muted-foreground/80">{site.centre} · Guided by Vaidh Jitender Bharti · {site.address.line3}</p>
         </div>
         <p className="mt-6 max-w-3xl text-[11px] leading-relaxed text-muted-foreground/70">
           The information on this website is for general education about Ayurveda and is not a substitute for

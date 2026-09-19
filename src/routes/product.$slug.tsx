@@ -881,12 +881,12 @@ function ProductDetail() {
                 <div className="flex items-center gap-4">
                   <img
                     src={portraitUrl}
-                    alt="Vaidh Bharti"
+                    alt="Vaidh Jitender Bharti"
                     className="h-16 w-16 rounded-full border-2 border-gold/40 object-cover shrink-0 shadow-sm"
                   />
                   <div>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gold">Clinic Founder</span>
-                    <h4 className="font-display text-lg text-foreground">Vaidh Bharti</h4>
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gold">Clinic Founder & Owner</span>
+                    <h4 className="font-display text-lg text-foreground">Vaidh Jitender Bharti</h4>
                     <p className="text-xs text-muted-foreground">Panchsheel Aarogya Dhaam</p>
                   </div>
                 </div>

@@ -240,7 +240,7 @@ function Contact() {
             <div>
               <h2 className="font-display text-3xl sm:text-4xl">Need Personalised Ayurvedic Guidance?</h2>
               <p className="mt-3 max-w-lg text-sm leading-relaxed opacity-90">
-                Book an unhurried consultation with Vaidh Bharti at Panchsheel Aarogya Dhaam and receive a plan built
+                Book an unhurried consultation with Vaidh Jitender Bharti at Panchsheel Aarogya Dhaam and receive a plan built
                 around your constitution, routine and diet.
               </p>
             </div>

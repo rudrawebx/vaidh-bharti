@@ -184,7 +184,7 @@ function About() {
             <div aria-hidden className="absolute -left-4 -top-4 h-28 w-28 border-l border-t border-gold/50" />
             <img
               src={portraitUrl}
-              alt="Vaidh Bharti, founder of Panchsheel Aarogya Dhaam"
+              alt="Vaidh Jitender Bharti, founder and owner of Panchsheel Aarogya Dhaam"
               loading="lazy"
               width={768}
               height={1024}
@@ -200,7 +200,7 @@ function About() {
             </h2>
             <div className="mt-7 space-y-5 text-[15px] leading-relaxed text-muted-foreground">
               <p>
-                Vaidh Bharti is an Ayurvedic expert with over 20 years of experience and the founder of Panchsheel
+                Vaidh Jitender Bharti is an Ayurvedic expert with over 20 years of experience, owner and founder of Panchsheel
                 Aarogya Dhaam, a holistic Ayurvedic wellness centre guided by a single belief —{" "}
                 <em className="text-foreground">“Ayurveda is not just treatment, it's a lifestyle.”</em>
               </p>
@@ -221,12 +221,12 @@ function About() {
                 to="/about"
                 className="group inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary"
               >
-                Discover Vaidh Bharti's Journey
+                Discover Vaidh Jitender Bharti's Journey
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <div className="hidden text-right sm:block">
                 <Signature className="ml-auto h-10 w-40 text-gold" />
-                <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Vaidh Bharti</p>
+                <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Vaidh Jitender Bharti (Owner & Founder)</p>
               </div>
             </div>
           </Reveal>

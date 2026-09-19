@@ -7,16 +7,16 @@ import centreImg from "@/assets/centre.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Vaidh Bharti — Ayurvedic Expert in Hansi, Haryana" },
+      { title: "About Vaidh Jitender Bharti — Ayurvedic Expert in Hansi, Haryana" },
       {
         name: "description",
         content:
-          "Vaidh Bharti, founder of Panchsheel Aarogya Dhaam, has over 20 years of experience in Ayurveda — his story, philosophy and patient-centric approach to healing.",
+          "Vaidh Jitender Bharti, founder and owner of Panchsheel Aarogya Dhaam, has over 20 years of experience in Ayurveda — his story, philosophy and patient-centric approach to healing.",
       },
-      { property: "og:title", content: "About Vaidh Bharti — Ayurvedic Expert in Hansi, Haryana" },
+      { property: "og:title", content: "About Vaidh Jitender Bharti — Ayurvedic Expert in Hansi, Haryana" },
       {
         property: "og:description",
-        content: "The story, philosophy and Ayurvedic approach of Vaidh Bharti, founder of Panchsheel Aarogya Dhaam.",
+        content: "The story, philosophy and Ayurvedic approach of Vaidh Jitender Bharti, founder and owner of Panchsheel Aarogya Dhaam.",
       },
       { property: "og:type", content: "profile" },
       { property: "og:url", content: "/about" },
@@ -42,7 +42,7 @@ function About() {
             <Reveal>
               <img
                 src={portraitUrl}
-                alt="Portrait of Vaidh Bharti, founder of Panchsheel Aarogya Dhaam"
+                alt="Portrait of Vaidh Jitender Bharti, founder and owner of Panchsheel Aarogya Dhaam"
                 loading="lazy"
                 width={768}
                 height={1024}
@@ -50,13 +50,13 @@ function About() {
               />
               <Signature className="mt-8 h-12 w-48 text-gold" />
               <p className="mt-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                Vaidh Bharti — Founder, Panchsheel Aarogya Dhaam
+                Vaidh Jitender Bharti — Owner & Founder, Panchsheel Aarogya Dhaam
               </p>
             </Reveal>
 
             <Reveal delay={100} className="space-y-6 text-[15px] leading-relaxed text-muted-foreground">
               <p>
-                Vaidh Bharti is an Ayurvedic expert with over 20 years of experience and the founder of{" "}
+                Vaidh Jitender Bharti is an Ayurvedic expert with over 20 years of experience and the founder and owner of{" "}
                 <span className="text-foreground">Panchsheel Aarogya Dhaam</span>, a holistic Ayurvedic wellness centre
                 in Hansi, Haryana, dedicated to restoring health through the ancient science of Ayurveda.
               </p>
@@ -73,13 +73,13 @@ function About() {
                 lifestyle disorders — offering not only care, but a complete path to physical, mental and spiritual
                 wellbeing.
               </p>
-              <p>For Vaidh Bharti, healing is not a business. It is a sacred mission.</p>
+              <p>For Vaidh Jitender Bharti, healing is not a business. It is a sacred mission.</p>
 
               <h2 className="pt-6 font-display text-3xl text-foreground">
                 A Father's Promise: The Inspiration Behind the Mission
               </h2>
               <p>
-                The turning point in Vaidh Bharti's life came through a deeply personal loss. His daughter,{" "}
+                The turning point in Vaidh Jitender Bharti's life came through a deeply personal loss. His daughter,{" "}
                 <span className="text-foreground">Diksha Bharti</span>, was diagnosed with cancer at the age of three.
                 Despite every effort, he was unable to save her. Her passing left a permanent mark on his life.
               </p>

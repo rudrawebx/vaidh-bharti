@@ -6,16 +6,16 @@ import { panchsheel, portraitUrl, site, whatsappHref } from "@/lib/site";
 export const Route = createFileRoute("/our-story")({
   head: () => ({
     meta: [
-      { title: "Our Story — Panchsheel Aarogya Dhaam | Vaidh Bharti" },
+      { title: "Our Story — Panchsheel Aarogya Dhaam | Vaidh Jitender Bharti" },
       {
         name: "description",
         content:
-          "How Panchsheel Aarogya Dhaam began in Hansi, Haryana — the practice of Vaidh Bharti, the five principles behind the centre and the care offered there today.",
+          "How Panchsheel Aarogya Dhaam began in Hansi, Haryana — the practice of Vaidh Jitender Bharti (Owner & Founder), the five principles behind the centre and the care offered there today.",
       },
-      { property: "og:title", content: "Our Story — Vaidh Bharti" },
+      { property: "og:title", content: "Our Story — Vaidh Jitender Bharti" },
       {
         property: "og:description",
-        content: "The journey behind Panchsheel Aarogya Dhaam and the Ayurvedic practice of Vaidh Bharti.",
+        content: "The journey behind Panchsheel Aarogya Dhaam and the Ayurvedic practice of Vaidh Jitender Bharti.",
       },
       { property: "og:type", content: "article" },
       { property: "og:url", content: "/our-story" },
@@ -41,7 +41,7 @@ function OurStory() {
             <Reveal>
               <img
                 src={portraitUrl}
-                alt="Vaidh Bharti, Ayurvedic practitioner at Panchsheel Aarogya Dhaam, Hansi"
+                alt="Vaidh Jitender Bharti, founder and owner of Panchsheel Aarogya Dhaam, Hansi"
                 loading="lazy"
                 className="w-full border border-border object-cover"
               />
@@ -50,7 +50,7 @@ function OurStory() {
               <Eyebrow>The beginning</Eyebrow>
               <h2 className="font-display text-3xl text-foreground sm:text-4xl">From classical study to daily practice</h2>
               <p>
-                Vaidh Bharti&apos;s work began with the classical texts and with years of clinical observation — reading
+                Vaidh Jitender Bharti&apos;s work began with the classical texts and with years of clinical observation — reading
                 the pulse, watching how digestion, sleep and routine shape a person&apos;s health long before an illness
                 is named.
               </p>

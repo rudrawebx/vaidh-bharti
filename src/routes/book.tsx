@@ -23,7 +23,7 @@ export const Route = createFileRoute("/book")({
       {
         name: "description",
         content:
-          "Choose a date and time for your Ayurvedic consultation, Nadi Pariksha or Panchakarma assessment with Vaidh Bharti at Panchsheel Aarogya Dhaam, Hansi.",
+          "Choose a date and time for your Ayurvedic consultation, Nadi Pariksha or Panchakarma assessment with Vaidh Jitender Bharti at Panchsheel Aarogya Dhaam, Hansi.",
       },
       { property: "og:title", content: "Book an Ayurvedic Consultation — Vaidh Bharti" },
       { property: "og:description", content: "Reserve a time for consultation, Nadi Pariksha or Panchakarma assessment." },

@@ -8,6 +8,8 @@ import skinImg from "@/assets/prod-skin.png";
 export const site = {
   name: "Vaidh Bharti",
   centre: "Panchsheel Aarogya Dhaam",
+  owner: "Jitender Bharti",
+  founder: "Vaidh Jitender Bharti",
   tagline: "Ayurved Amrit Hai, Ise Apnaao",
   phone: "+919996415501",
   phoneDisplay: "+91 99964 15501",

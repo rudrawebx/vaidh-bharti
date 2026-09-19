@@ -17,7 +17,7 @@ const categories = [
   "Ayurvedic Therapies",
   "Panchakarma",
   "Herbs & Formulations",
-  "Vaidh Bharti",
+  "Vaidh Jitender Bharti",
 ] as const;
 
 const shots = [
@@ -25,7 +25,7 @@ const shots = [
   { src: panchakarmaImg, alt: "Panchakarma therapy room with brass vessels", cat: "Panchakarma", tall: false },
   { src: nadiImg, alt: "Nadi Pariksha pulse assessment", cat: "Ayurvedic Therapies", tall: false },
   { src: herbs, alt: "Ayurvedic herbs, roots and powders", cat: "Herbs & Formulations", tall: true },
-  { src: portraitUrl, alt: "Vaidh Bharti at Panchsheel Aarogya Dhaam", cat: "Vaidh Bharti", tall: true },
+  { src: portraitUrl, alt: "Vaidh Jitender Bharti (Owner & Founder) at Panchsheel Aarogya Dhaam", cat: "Vaidh Jitender Bharti", tall: true },
   { src: centreImg, alt: "Quiet corner of the wellness environment", cat: "The Centre", tall: false },
 ];
 

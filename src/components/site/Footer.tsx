@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Container } from "@/components/site/primitives";
-import logoAsset from "@/assets/logo.png.asset.json";
+import logo from "@/assets/logo.png";
 import { mapsHref, site, telHref, whatsappHref } from "@/lib/site";
 
 type FooterSection = {
@@ -47,7 +47,7 @@ export function Footer() {
           {/* Brand block */}
           <div className="flex flex-col gap-6">
             <img
-              src={logoAsset.url}
+              src={logo}
               alt="Vaidh Bharti"
               className="h-20 w-fit rounded-md bg-background/95 object-contain p-2"
             />

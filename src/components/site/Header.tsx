@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronDown, Menu, ShoppingBag, User, X } from "lucide-react";
 import { Container } from "@/components/site/primitives";
-import logoAsset from "@/assets/logo.png.asset.json";
+import logo from "@/assets/logo.png";
 import { whatsappHref } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
@@ -46,7 +46,7 @@ export function Brand({ compact = false }: { compact?: boolean; inverted?: boole
   return (
     <Link to="/" className="group flex items-center" aria-label="Vaidh Bharti — Panchsheel Aarogya Dhaam, home">
       <img
-        src={logoAsset.url}
+        src={logo}
         alt="Vaidh Bharti"
         className={cn("w-auto shrink-0 object-contain transition-all", compact ? "h-11" : "h-14")}
       />

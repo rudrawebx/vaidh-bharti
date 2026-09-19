@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-rout
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Container } from "@/components/site/primitives";
-import logoAsset from "@/assets/logo.png.asset.json";
+import logo from "@/assets/logo.png";
 import { useAuth, useIsAdmin } from "@/hooks/useAuth";
 import { adminExists, claimAdmin } from "@/lib/bookings.functions";
 
@@ -118,7 +118,7 @@ function AdminLayout() {
     <section className="py-12">
       <Container>
         <div className="flex items-center gap-4">
-          <img src={logoAsset.url} alt="Vaidh Bharti logo" width={48} height={48} className="h-12 w-auto object-contain" />
+          <img src={logo} alt="Vaidh Bharti logo" width={48} height={48} className="h-12 w-auto object-contain" />
           <div>
             <h1 className="font-display text-4xl leading-none">Admin</h1>
             <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Vaidh Bharti — Panchsheel Aarogya Dhaam</p>

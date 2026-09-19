@@ -173,7 +173,7 @@ function RootComponent() {
           Skip to content
         </a>
         <Header />
-        <main id="main" className="pt-24 lg:pt-28">
+        <main id="main" className="pt-20 sm:pt-22 md:pt-24">
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
         </main>

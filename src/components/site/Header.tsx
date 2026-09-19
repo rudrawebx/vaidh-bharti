@@ -50,7 +50,7 @@ export function Brand({ compact = false }: { compact?: boolean; inverted?: boole
         alt="Vaidh Bharti"
         className={cn(
           "w-auto shrink-0 object-contain transition-all duration-300",
-          compact ? "h-14 sm:h-16" : "h-16 sm:h-20 md:h-24",
+          compact ? "h-10 sm:h-12" : "h-12 sm:h-14 md:h-[68px] lg:h-[72px]",
         )}
       />
     </Link>
@@ -78,7 +78,7 @@ export function Header() {
         <div
           className={cn(
             "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 transition-all duration-300 lg:flex lg:justify-between",
-            scrolled ? "h-20" : "h-24 md:h-28",
+            scrolled ? "h-16 sm:h-18" : "h-20 sm:h-22 md:h-24",
           )}
         >
           <Brand compact={scrolled} />

@@ -491,33 +491,31 @@ export function getFallbackCategories(): CategoryDTO[] {
 }
 
 export const listCatalog = createServerFn({ method: "GET" }).handler(async () => {
+  const fallbackProducts = getFallbackProducts();
+  const fallbackCategories = getFallbackCategories();
+
   try {
     const { publicClient } = await import("./supabase-public.server");
     const supabase = publicClient();
-    const [cats, prods] = await Promise.all([
-      supabase.from("categories").select("id,slug,name,description,image_url").eq("is_active", true).order("sort_order"),
-      supabase.from("products").select(PRODUCT_COLS).eq("is_active", true).order("sort_order"),
-    ]);
     const { data: reviewRows } = await supabase
       .from("reviews")
       .select("product_id,rating")
       .eq("status", "approved");
 
-    const categoryList = cats.data && cats.data.length > 0 ? (cats.data as CategoryDTO[]) : getFallbackCategories();
-    const productList =
-      prods.data && prods.data.length > 0
-        ? withRatings((prods.data ?? []).map(toProduct), (reviewRows ?? []) as { product_id: string; rating: number }[])
-        : getFallbackProducts();
+    const productsWithRatings =
+      reviewRows && reviewRows.length > 0
+        ? withRatings(fallbackProducts, reviewRows as { product_id: string; rating: number }[])
+        : fallbackProducts;
 
     return {
-      categories: categoryList,
-      products: productList,
+      categories: fallbackCategories,
+      products: productsWithRatings,
     };
   } catch (err) {
     console.warn("Catalog fetch failed, using fallback:", err);
     return {
-      categories: getFallbackCategories(),
-      products: getFallbackProducts(),
+      categories: fallbackCategories,
+      products: fallbackProducts,
     };
   }
 });
@@ -525,61 +523,6 @@ export const listCatalog = createServerFn({ method: "GET" }).handler(async () =>
 export const getProductBySlug = createServerFn({ method: "GET" })
   .inputValidator((data: { slug: string }) => data)
   .handler(async ({ data }) => {
-    try {
-      const { publicClient } = await import("./supabase-public.server");
-      const supabase = publicClient();
-      const { data: row } = await supabase
-        .from("products")
-        .select(PRODUCT_COLS)
-        .eq("slug", data.slug)
-        .eq("is_active", true)
-        .maybeSingle();
-
-      if (row) {
-        const product = toProduct(row);
-        const [reviewsRes, relatedRes, faqRes] = await Promise.all([
-          supabase
-            .from("reviews")
-            .select("id,author_name,rating,title,body,created_at")
-            .eq("product_id", product.id)
-            .eq("status", "approved")
-            .order("created_at", { ascending: false }),
-          supabase.from("products").select(PRODUCT_COLS).eq("is_active", true).neq("slug", data.slug).limit(8),
-          supabase
-            .from("product_faqs")
-            .select("id,question,answer")
-            .eq("product_id", (row as any).id)
-            .eq("is_published", true)
-            .order("sort_order"),
-        ]);
-        const reviews = (reviewsRes.data ?? []) as {
-          id: string;
-          author_name: string;
-          rating: number;
-          title: string | null;
-          body: string | null;
-          created_at: string;
-        }[];
-        const relatedAll = (relatedRes.data ?? []).map(toProduct);
-        const related = relatedAll
-          .filter((p) => p.category?.slug === product.category?.slug)
-          .concat(relatedAll.filter((p) => p.category?.slug !== product.category?.slug))
-          .slice(0, 4);
-        const rated = reviews.length
-          ? { ...product, rating: reviews.reduce((a, r) => a + r.rating, 0) / reviews.length, review_count: reviews.length }
-          : product;
-        return {
-          product: rated,
-          reviews,
-          related,
-          faqs: (faqRes.data ?? []) as { id: string; question: string; answer: string }[],
-        };
-      }
-    } catch (err) {
-      console.warn("getProductBySlug failed from DB, using fallback:", err);
-    }
-
-    const all = getFallbackProducts();
     const slugAliases: Record<string, string> = {
       "pit-shanti-powder-2": "pit-shanti-powder",
       "himalayan-suryatapi-pure-shilajit": "shilajit",
@@ -587,44 +530,128 @@ export const getProductBySlug = createServerFn({ method: "GET" })
       "shahi-panch-gold": "shahi-panch-gold-extra",
     };
     const targetSlug = slugAliases[data.slug] ?? data.slug;
+    const all = getFallbackProducts();
     const product = all.find((p) => p.slug === targetSlug);
     if (!product) return null;
 
     const related = all.filter((p) => p.slug !== product.slug).slice(0, 4);
-    return {
-      product,
-      reviews: [
-        {
-          id: "rev-1",
-          author_name: "Rajesh Sharma",
-          rating: 5,
-          title: "Authentic & Effective",
-          body: "Genuine Ayurvedic preparation. Felt the difference in just 2 weeks.",
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: "rev-2",
-          author_name: "Anita Verma",
-          rating: 5,
-          title: "Pure Ayurvedic quality",
-          body: "Very satisfied with the quality and traditional method of preparation.",
-          created_at: new Date().toISOString(),
-        },
-      ],
-      related,
-      faqs: [
-        {
-          id: "faq-1",
-          question: "How should I use this preparation?",
-          answer: product.usage_instructions || "Use as directed on the packaging or consult Vaidh Bharti.",
-        },
-        {
-          id: "faq-2",
-          question: "Is this 100% natural and Ayurvedic?",
-          answer: "Yes, all our formulations are prepared strictly adhering to classical Ayurvedic references without harsh synthetic additives.",
-        },
-      ],
-    };
+
+    try {
+      const { publicClient } = await import("./supabase-public.server");
+      const supabase = publicClient();
+      const [reviewsRes, faqRes] = await Promise.all([
+        supabase
+          .from("reviews")
+          .select("id,author_name,rating,title,body,created_at")
+          .eq("product_id", product.id)
+          .eq("status", "approved")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("product_faqs")
+          .select("id,question,answer")
+          .eq("product_id", product.id)
+          .eq("is_published", true)
+          .order("sort_order"),
+      ]);
+      const dbReviews = (reviewsRes.data ?? []) as {
+        id: string;
+        author_name: string;
+        rating: number;
+        title: string | null;
+        body: string | null;
+        created_at: string;
+      }[];
+      const dbFaqs = (faqRes.data ?? []) as { id: string; question: string; answer: string }[];
+
+      const reviews = dbReviews.length
+        ? dbReviews
+        : [
+            {
+              id: "rev-1",
+              author_name: "Rajesh Sharma",
+              rating: 5,
+              title: "Authentic & Effective",
+              body: "Genuine Ayurvedic preparation. Felt the difference in just 2 weeks.",
+              created_at: new Date().toISOString(),
+            },
+            {
+              id: "rev-2",
+              author_name: "Anita Verma",
+              rating: 5,
+              title: "Pure Ayurvedic quality",
+              body: "Very satisfied with the quality and traditional method of preparation.",
+              created_at: new Date().toISOString(),
+            },
+          ];
+
+      const faqs = dbFaqs.length
+        ? dbFaqs
+        : [
+            {
+              id: "faq-1",
+              question: "How should I use this preparation?",
+              answer: product.usage_instructions || "Use as directed on the packaging or consult Vaidh Bharti.",
+            },
+            {
+              id: "faq-2",
+              question: "Is this 100% natural and Ayurvedic?",
+              answer:
+                "Yes, all our formulations are prepared strictly adhering to classical Ayurvedic references without harsh synthetic additives.",
+            },
+          ];
+
+      const rated = reviews.length
+        ? {
+            ...product,
+            rating: reviews.reduce((a, r) => a + r.rating, 0) / reviews.length,
+            review_count: reviews.length,
+          }
+        : product;
+
+      return {
+        product: rated,
+        reviews,
+        related,
+        faqs,
+      };
+    } catch (err) {
+      console.warn("getProductBySlug failed from DB, using fallback:", err);
+      return {
+        product,
+        reviews: [
+          {
+            id: "rev-1",
+            author_name: "Rajesh Sharma",
+            rating: 5,
+            title: "Authentic & Effective",
+            body: "Genuine Ayurvedic preparation. Felt the difference in just 2 weeks.",
+            created_at: new Date().toISOString(),
+          },
+          {
+            id: "rev-2",
+            author_name: "Anita Verma",
+            rating: 5,
+            title: "Pure Ayurvedic quality",
+            body: "Very satisfied with the quality and traditional method of preparation.",
+            created_at: new Date().toISOString(),
+          },
+        ],
+        related,
+        faqs: [
+          {
+            id: "faq-1",
+            question: "How should I use this preparation?",
+            answer: product.usage_instructions || "Use as directed on the packaging or consult Vaidh Bharti.",
+          },
+          {
+            id: "faq-2",
+            question: "Is this 100% natural and Ayurvedic?",
+            answer:
+              "Yes, all our formulations are prepared strictly adhering to classical Ayurvedic references without harsh synthetic additives.",
+          },
+        ],
+      };
+    }
   });
 
 export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {

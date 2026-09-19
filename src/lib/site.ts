@@ -170,7 +170,7 @@ export const journey = [
 export type Product = {
   slug: string;
   name: string;
-  category: "Oils" | "Powders" | "Shilajit" | "Capsules" | "Skin Care";
+  category: "Oils" | "Powders" | "Shilajit" | "Capsules";
   price?: number | undefined;
   short: string;
   description: string;
@@ -180,59 +180,25 @@ export type Product = {
   image: string;
 };
 
-export const productCategories = ["All", "Oils", "Powders", "Shilajit", "Capsules", "Skin Care"] as const;
+export const productCategories = ["All", "Oils", "Powders", "Shilajit", "Capsules"] as const;
 
 export const products: Product[] = [
   {
-    slug: "fat-panch-powder",
-    name: "Fat Panch Powder",
+    slug: "pit-shanti-powder",
+    name: "Pit Shanti Powder",
     category: "Powders",
-    price: 999,
-    short: "Medohar Ayurvedic formula for natural metabolism, gut cleansing & lipid balance.",
+    price: 699,
+    short: "Soothes severe hyperacidity, acid reflux, peptic ulcers & internal Pitta burning.",
     description:
-      "Classical Ayurvedic formulation combining Triphala, Medohar Guggulu, Nagarmotha, and Agnimantha to stimulate digestive fire (Deepana-Pachana) and support natural weight management.",
+      "Time-tested classical Ayurvedic churna formulated under Vaidya supervision with Kamdudha, Praval Pishti, Shankh Bhasma, and Mulethi for instant and prolonged relief from acid heartburn and excess Pitta.",
     benefits: [
-      "Naturally stimulates metabolism & Agni",
-      "Assists in clearing toxins (Ama dosha)",
-      "Supports active, balanced digestion",
+      "Instantly cools acid heartburn and chest discomfort",
+      "Soothes stomach mucosal lining and sour belching",
+      "Balances internal thermal excess (Ushna Guna)",
     ],
-    ingredients: "Triphala, Medohar Guggulu, Nagarmotha, Agnimantha, Chitrak, Vidanga, Shunthi, Pippali, Maricha.",
-    usage: "Take 1 teaspoon (approx 3-5g) twice daily with lukewarm water before meals, or as directed by Vaidya.",
-    image: "/assets/products/fat-panch-powder-front.png",
-  },
-  {
-    slug: "panch-vat-powder",
-    name: "Panch Vat Powder",
-    category: "Powders",
-    price: 899,
-    short: "Potent Sandhivata churna for knee flexibility, stiffness relief & joint lubrication.",
-    description:
-      "Vaidya-supervised classical formulation enriched with Yograj Guggulu, Rasna, Ashwagandha, and Shallaki to pacify aggravated Vata dosha and support healthy articular cartilage.",
-    benefits: [
-      "Calms deep-seated Vata in bone joints",
-      "Relieves morning stiffness & aches",
-      "Enhances natural synovial joint mobility",
-    ],
-    ingredients: "Yograj Guggulu, Rasna, Ashwagandha, Shallaki, Shunthi, Eranda Mool, Devdaru, Nirgundi.",
-    usage: "Take 1 teaspoon (3-5g) twice daily with warm milk or lukewarm water after meals, or as directed by Vaidya.",
-    image: "/assets/products/panch-vat-powder-front.png",
-  },
-  {
-    slug: "nabhi-oil",
-    name: "Nabhi Oil",
-    category: "Oils",
-    price: 599,
-    short: "Traditional belly button Ayurvedic taila for core digestion & cellular glow.",
-    description:
-      "Handcrafted herbal oil infused with Castor, Mustard, Neem, and Til Taila using classical taila paka vidhi. Nourishes the Nabhi (umbilicus) to balance bodily energies.",
-    benefits: [
-      "Stimulates internal digestive Agni",
-      "Nourishes skin & promotes natural glow",
-      "Soothes abdominal tightness & bloating",
-    ],
-    ingredients: "Sesame (Til) Oil, Castor (Eranda) Oil, Mustard Oil, Almond Oil, Neem, Tea tree, Camphor.",
-    usage: "Put 2-3 warm drops into the navel before bedtime. Gently massage clockwise for 2 minutes.",
-    image: "/assets/products/nabhi-oil-front.png",
+    ingredients: "Praval Pishti, Mukta Shukti, Shankh Bhasma, Kamdudha Ras, Yashtimadhu, Amla, Shatavari, Elaichi.",
+    usage: "Take 1 teaspoon (3-5g) twice daily with cold water or fresh milk after meals.",
+    image: "/assets/products/pit-shanti-powder-front.png",
   },
   {
     slug: "luko-panch-powder",
@@ -269,8 +235,59 @@ export const products: Product[] = [
     image: "/assets/products/panch-liv-powder-front.png",
   },
   {
+    slug: "nabhi-oil",
+    name: "Nabhi Oil",
+    category: "Oils",
+    price: 599,
+    short: "Traditional belly button Ayurvedic taila for core digestion & cellular glow.",
+    description:
+      "Handcrafted herbal oil infused with Castor, Mustard, Neem, and Til Taila using classical taila paka vidhi. Nourishes the Nabhi (umbilicus) to balance bodily energies.",
+    benefits: [
+      "Stimulates internal digestive Agni",
+      "Nourishes skin & promotes natural glow",
+      "Soothes abdominal tightness & bloating",
+    ],
+    ingredients: "Sesame (Til) Oil, Castor (Eranda) Oil, Mustard Oil, Almond Oil, Neem, Tea tree, Camphor.",
+    usage: "Put 2-3 warm drops into the navel before bedtime. Gently massage clockwise for 2 minutes.",
+    image: "/assets/products/nabhi-oil-front.png",
+  },
+  {
+    slug: "panch-vat-powder",
+    name: "Panch Vat Powder",
+    category: "Powders",
+    price: 899,
+    short: "Potent Sandhivata churna for knee flexibility, stiffness relief & joint lubrication.",
+    description:
+      "Vaidya-supervised classical formulation enriched with Yograj Guggulu, Rasna, Ashwagandha, and Shallaki to pacify aggravated Vata dosha and support healthy articular cartilage.",
+    benefits: [
+      "Calms deep-seated Vata in bone joints",
+      "Relieves morning stiffness & aches",
+      "Enhances natural synovial joint mobility",
+    ],
+    ingredients: "Yograj Guggulu, Rasna, Ashwagandha, Shallaki, Shunthi, Eranda Mool, Devdaru, Nirgundi.",
+    usage: "Take 1 teaspoon (3-5g) twice daily with warm milk or lukewarm water after meals, or as directed by Vaidya.",
+    image: "/assets/products/panch-vat-powder-front.png",
+  },
+  {
+    slug: "fat-panch-powder",
+    name: "Fat Panch Powder",
+    category: "Powders",
+    price: 999,
+    short: "Medohar Ayurvedic formula for natural metabolism, gut cleansing & lipid balance.",
+    description:
+      "Classical Ayurvedic formulation combining Triphala, Medohar Guggulu, Nagarmotha, and Agnimantha to stimulate digestive fire (Deepana-Pachana) and support natural weight management.",
+    benefits: [
+      "Naturally stimulates metabolism & Agni",
+      "Assists in clearing toxins (Ama dosha)",
+      "Supports active, balanced digestion",
+    ],
+    ingredients: "Triphala, Medohar Guggulu, Nagarmotha, Agnimantha, Chitrak, Vidanga, Shunthi, Pippali, Maricha.",
+    usage: "Take 1 teaspoon (approx 3-5g) twice daily with lukewarm water before meals, or as directed by Vaidya.",
+    image: "/assets/products/fat-panch-powder-front.png",
+  },
+  {
     slug: "shilajit",
-    name: "Himalayan Suryatapi Pure Shilajit",
+    name: "Shilajit",
     category: "Shilajit",
     price: 999,
     short: "100% Sun-dried purified high-altitude Shilajit resin with 75%+ Fulvic Acid.",
@@ -303,21 +320,38 @@ export const products: Product[] = [
     image: "/assets/products/red-onion-hair-oil-front.png",
   },
   {
-    slug: "pit-shanti-powder-2",
-    name: "Pit Shanti Powder 2",
+    slug: "panch-fresh-powder",
+    name: "Panch Fresh Powder",
     category: "Powders",
-    price: 699,
-    short: "Soothes severe hyperacidity, acid reflux, peptic ulcers & internal Pitta burning.",
+    price: 449,
+    short: "Gentle yet potent Ayurvedic Virechana churna for chronic constipation & bowel regularity.",
     description:
-      "Specially amplified cooling formula with Kamdudha, Praval Pishti, Shankh Bhasma, and Mulethi for instant and prolonged relief from severe Pitta exacerbations.",
+      "Time-tested Ayurvedic colon-cleansing formula crafted with Sanay Patti, Haritaki, Saunf, Ajwain, Sendha Namak and Nishoth to stimulate natural peristalsis without dependency.",
     benefits: [
-      "Instantly cools acid heartburn and chest discomfort",
-      "Soothes stomach mucosal lining",
-      "Balances internal thermal excess (Ushna Guna)",
+      "Effective overnight relief from chronic constipation",
+      "Promotes comfortable evacuation without cramps",
+      "Relieves abdominal bloating and heaviness",
     ],
-    ingredients: "Praval Pishti, Mukta Shukti, Shankh Bhasma, Kamdudha Ras, Yashtimadhu, Amla, Shatavari, Elaichi.",
-    usage: "Take 1 teaspoon (3-5g) twice daily with cold water or fresh milk after meals.",
-    image: "/assets/products/pit-shanti-powder-front.png",
+    ingredients: "Sanay Patti, Haritaki, Saunf, Ajwain, Sendha Namak, Nishoth, Baheda, Amla, Mulethi.",
+    usage: "Take 1/2 to 1 teaspoon (3g-5g) with lukewarm water at bedtime, or as advised by Vaidya.",
+    image: "/assets/products/panch-fresh-powder-front.png",
+  },
+  {
+    slug: "shahi-panch-gold-extra",
+    name: "Shahi Panch Gold Extra",
+    category: "Capsules",
+    price: 1499,
+    short: "Premium Ayurvedic Rasayana capsules fortified with Swarna Bhasma, Shilajit & Ashwagandha.",
+    description:
+      "Esteemed classical Ayurvedic Rasayana and Vajikarana preparation in convenient capsule form with Swarna Bhasma, Shuddha Shilajit, Kesar, Ashwagandha and Safed Musli for deep tissue nourishment and endurance.",
+    benefits: [
+      "Premium Ayurvedic Rasayana & Vajikarana medicine",
+      "Fortified with Swarna Bhasma, Shilajit, Ashwagandha & Kesar",
+      "Promotes physical endurance, vigor, and stress recovery",
+    ],
+    ingredients: "Swarna Bhasma, Shuddha Shilajit, Ashwagandha, Safed Musli, Kaunch Beej, Gokshura, Akarkara, Jaiphal, Kesar, Vang Bhasma.",
+    usage: "Take 1 capsule twice daily with warm milk or as directed by your Ayurvedic physician.",
+    image: "/assets/products/shahi-panch-gold-front.png",
   },
 ];
 
@@ -374,7 +408,7 @@ export const faqs = [
   },
   {
     q: "Can I purchase Ayurvedic products online?",
-    a: "Yes. Our Ayurvedic oils, powders, Shilajit, capsules and skin care preparations can be browsed and ordered from the Products section of this website. For guidance on what suits you, please speak with us first.",
+    a: "Yes. Our Ayurvedic oils, powders, Shilajit and capsules can be browsed and ordered from the Products section of this website. For guidance on what suits you, please speak with us first.",
   },
   {
     q: "Do I need an appointment?",

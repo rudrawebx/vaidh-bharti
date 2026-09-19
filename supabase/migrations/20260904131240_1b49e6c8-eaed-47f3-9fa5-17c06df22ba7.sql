@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.booked_slots(date, date);

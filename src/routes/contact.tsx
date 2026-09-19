@@ -12,6 +12,12 @@ import {
   ShieldCheck,
   Headphones,
   Loader2,
+  HelpCircle,
+  CheckCircle2,
+  Calendar,
+  ArrowRight,
+  ExternalLink,
+  Sparkles,
 } from "lucide-react";
 import { Container, Reveal } from "@/components/site/primitives";
 import { PageHero } from "@/components/site/PageHero";
@@ -75,25 +81,36 @@ const enquiryTypes = [
 
 const faqs = [
   {
-    q: "How can I book a consultation?",
-    a: "You can book online from the Book a Consultation page, or simply call or WhatsApp us on " + site.phoneDisplay + " and we will reserve a time for you.",
+    q: "How can I book an appointment with Vaidh Jitender Bharti?",
+    a: `You can reserve an appointment directly through our online booking page, or simply call or WhatsApp us on ${site.phoneDisplay}. We will confirm your preferred date and time slot.`,
   },
   {
-    q: "Where is your centre located?",
-    a: `${site.address.line1}, ${site.address.line2}, ${site.address.line3}. Use the Get Directions button on this page to open it in Google Maps.`,
-  },
-  { q: "What are your consultation hours?", a: `We are open ${site.hours}.` },
-  {
-    q: "How can I track my order?",
-    a: "Open the Track Order page and enter your order number. You can also find all your orders under My Account once you are signed in.",
+    q: "Where is Panchsheel Aarogya Dhaam located?",
+    a: `${site.address.line1}, ${site.address.line2}, ${site.address.line3}. You can use the 'Get Directions' button on this page or the interactive map to navigate directly.`,
   },
   {
-    q: "How can I ask a question about a product?",
-    a: "Choose Product Enquiry in the form on this page, or message us on WhatsApp with the product name and we will guide you.",
+    q: "What are the clinic hours and consultation days?",
+    a: `Our clinic is open ${site.hours}. We remain closed on Sundays. In-person consultations, pulse diagnosis, and herbal dispensations take place during these hours.`,
   },
   {
-    q: "How soon will I get a reply?",
-    a: "Enquiries are answered during working hours, Monday to Saturday. For anything urgent, please call us directly.",
+    q: "Can I consult Vaidh Ji online if I live outside Hansi or Haryana?",
+    a: "Yes. For patients living in other states or abroad, we provide telephone and WhatsApp consultations. After an unhurried assessment of your history, prescribed Ayurvedic medicines are securely shipped directly to your doorstep with tracking.",
+  },
+  {
+    q: "What should I keep in mind before coming for Nadi Pariksha (Pulse Diagnosis)?",
+    a: "For the most accurate pulse reading, we advise coming in the morning on a relatively empty stomach or at least 2 to 3 hours after a light meal. Avoid tea, coffee, smoking, or heavy exercise immediately before your appointment, and bring along any previous medical records.",
+  },
+  {
+    q: "How can I track my herbal product order?",
+    a: "Open the Track Order page from our menu and enter your order number. You can also view active shipments under My Account or contact our team via WhatsApp for instant delivery status updates.",
+  },
+  {
+    q: "What payment methods do you accept?",
+    a: "We accept UPI (Google Pay, PhonePe, Paytm, BHIM), all major credit and debit cards, net banking, and cash for in-clinic visits and herbal purchases.",
+  },
+  {
+    q: "How can I ask questions about a specific herbal formulation?",
+    a: "Choose 'Product Enquiry' in our enquiry form on this page, or click the WhatsApp button to message our team with the product name. We'll guide you on proper dosage, benefits, and suitability.",
   },
 ];
 
@@ -313,17 +330,184 @@ function Contact() {
         </Container>
       </section>
 
-      <section className="border-t border-border py-20">
+      <section className="border-t border-border bg-secondary/25 py-20 sm:py-24">
         <Container>
-          <h2 className="font-display text-3xl sm:text-4xl">Frequently Asked Questions</h2>
-          <Accordion type="single" collapsible className="mt-8 max-w-3xl">
-            {faqs.map((f, i) => (
-              <AccordionItem key={f.q} value={`c-faq-${i}`}>
-                <AccordionTrigger className="text-left font-display text-lg">{f.q}</AccordionTrigger>
-                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">{f.a}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+            {/* Left Column: FAQs */}
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                <Sparkles className="h-3.5 w-3.5 text-gold" />
+                Clear Guidance & Answers
+              </div>
+              <h2 className="mt-3 font-display text-3xl sm:text-4xl text-foreground">
+                Frequently Asked Questions
+              </h2>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                Quick answers to common questions about consultations with Vaidh Jitender Bharti, clinic visits in Hansi, outstation guidance, and online order tracking.
+              </p>
+
+              <Accordion type="single" collapsible className="mt-8 space-y-3.5">
+                {faqs.map((f, i) => (
+                  <AccordionItem
+                    key={f.q}
+                    value={`c-faq-${i}`}
+                    className="rounded-sm border border-border bg-card px-5 transition-all hover:border-gold/60 data-[state=open]:border-gold data-[state=open]:bg-secondary/40 data-[state=open]:shadow-xs"
+                  >
+                    <AccordionTrigger className="text-left font-display text-base sm:text-lg hover:text-gold hover:no-underline py-4.5">
+                      {f.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-5 pt-1 text-sm leading-relaxed text-muted-foreground border-t border-border/50">
+                      {f.a}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+
+            {/* Right Column: Dedicated Patient Support & Clinic Visit Assistance */}
+            <div className="space-y-6 lg:sticky lg:top-28">
+              {/* Card 1: Direct Patient Support */}
+              <div className="rounded-sm border border-border bg-card p-7 shadow-xs">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-forest-deep">
+                    <HelpCircle className="h-3.5 w-3.5 text-gold" />
+                    Patient Support
+                  </span>
+                  <span className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                    </span>
+                    Mon – Sat (9AM – 6PM)
+                  </span>
+                </div>
+
+                <h3 className="mt-4 font-display text-2xl text-foreground">
+                  Still Have Questions?
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Our patient care team at Panchsheel Aarogya Dhaam is available to answer any questions about treatments, pulse diagnosis, or herbal products.
+                </p>
+
+                <div className="mt-6 space-y-3">
+                  <a
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-sm bg-[#1f8a4c] px-5 py-3.5 text-white shadow-xs transition-all hover:bg-[#186f3d]"
+                  >
+                    <span className="flex items-center gap-3 text-sm font-semibold">
+                      <MessageCircle className="h-4 w-4" />
+                      Chat on WhatsApp
+                    </span>
+                    <span className="text-[11px] font-medium opacity-90">Instant Reply →</span>
+                  </a>
+
+                  <a
+                    href={telHref}
+                    className="flex items-center justify-between rounded-sm border border-border bg-background px-5 py-3.5 text-foreground transition-all hover:border-gold hover:text-gold"
+                  >
+                    <span className="flex items-center gap-3 text-sm font-semibold">
+                      <Phone className="h-4 w-4 text-gold" />
+                      Call {site.phoneDisplay}
+                    </span>
+                    <span className="text-[11px] font-medium text-muted-foreground">Direct Line →</span>
+                  </a>
+                </div>
+
+                <div className="mt-5 border-t border-border pt-4">
+                  <p className="text-xs text-muted-foreground">
+                    <strong className="text-foreground font-medium">Clinic Address:</strong> {site.address.line1}, {site.address.line2}, Hansi (HR).
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 2: Clinic Visit Essentials */}
+              <div className="rounded-sm border border-border bg-card p-7 shadow-xs">
+                <div className="flex items-center gap-2 text-gold">
+                  <Calendar className="h-4 w-4" />
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
+                    Visiting Guidelines
+                  </span>
+                </div>
+                <h3 className="mt-2 font-display text-xl text-foreground">
+                  Preparing for Your Visit
+                </h3>
+
+                <ul className="mt-4 space-y-3 text-xs leading-relaxed text-muted-foreground">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                    <span>
+                      <strong className="text-foreground">Accurate Nadi Pariksha:</strong> Optimal reading occurs when visiting in the morning or 2–3 hours after a light meal.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                    <span>
+                      <strong className="text-foreground">Medical Records:</strong> Bring along previous investigation reports or ongoing medication details.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                    <span>
+                      <strong className="text-foreground">Convenient Location:</strong> Located on Barwala Road near Shree Ram ITI, Hansi, easily accessible via NH-9.
+                    </span>
+                  </li>
+                </ul>
+
+                <div className="mt-6 flex flex-wrap gap-2.5 border-t border-border pt-5">
+                  <Link
+                    to="/book"
+                    className="flex-1 rounded-sm bg-primary px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-primary-foreground shadow-xs transition-all hover:bg-forest-deep"
+                  >
+                    Book Appointment
+                  </Link>
+                  <a
+                    href={mapsHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 rounded-sm border border-border px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary hover:border-gold hover:text-gold"
+                  >
+                    Directions
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Card 3: Quick Treatment & Service Links */}
+              <div className="rounded-sm border border-border bg-card/70 p-5">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Explore Panchsheel Aarogya Dhaam
+                </span>
+                <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                  <Link
+                    to="/treatments/nadi-pariksha"
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-muted-foreground transition-colors hover:border-gold hover:text-gold"
+                  >
+                    Nadi Pariksha
+                  </Link>
+                  <Link
+                    to="/treatments/panchakarma"
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-muted-foreground transition-colors hover:border-gold hover:text-gold"
+                  >
+                    Panchakarma
+                  </Link>
+                  <Link
+                    to="/products"
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-muted-foreground transition-colors hover:border-gold hover:text-gold"
+                  >
+                    Ayurvedic Formulations
+                  </Link>
+                  <Link
+                    to="/gallery"
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-muted-foreground transition-colors hover:border-gold hover:text-gold"
+                  >
+                    Centre Gallery
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
         </Container>
       </section>
     </>

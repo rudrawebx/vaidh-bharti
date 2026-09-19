@@ -5,13 +5,13 @@ import type { ProductDTO } from "@/lib/catalog.functions";
  * traditional area of use, never a medical claim or a promise of cure.
  */
 export const healthGroups = [
-  { slug: "digestive", label: "Digestive Wellness", words: ["digest", "stomach", "pachan", "acidity", "liver", "appetite", "constipat", "gut"] },
-  { slug: "joint", label: "Joint & Muscle Wellness", words: ["joint", "muscle", "knee", "back", "pain", "arthr", "sandhi", "body ache"] },
-  { slug: "hair", label: "Hair & Scalp Care", words: ["hair", "scalp", "dandruff", "kesh"] },
-  { slug: "skin", label: "Skin Care", words: ["skin", "face", "glow", "twak", "complexion", "acne"] },
-  { slug: "immunity", label: "General Wellness", words: ["immun", "energy", "strength", "wellness", "vitality", "rasayan", "stamina", "daily"] },
-  { slug: "mens", label: "Men's Wellness", words: ["men", "male", "shilajit", "vigour", "vigor"] },
-  { slug: "womens", label: "Women's Wellness", words: ["women", "female", "menstru", "mother", "postnatal"] },
+  { slug: "digestive", label: "Digestive Wellness", words: ["digest", "stomach", "pachan", "acidity", "liver", "appetite", "constipat", "gut", "pit shanti", "panch liv", "panch fresh", "uder"] },
+  { slug: "joint", label: "Joint & Muscle Wellness", words: ["joint", "muscle", "knee", "back", "pain", "arthr", "sandhi", "body ache", "panch vat", "vat"] },
+  { slug: "hair", label: "Hair & Scalp Care", words: ["hair", "scalp", "dandruff", "kesh", "onion"] },
+  { slug: "skin", label: "Skin Care", words: ["skin", "face", "glow", "twak", "complexion", "acne", "saffron"] },
+  { slug: "immunity", label: "General & Metabolic Wellness", words: ["immun", "energy", "strength", "wellness", "vitality", "rasayan", "stamina", "daily", "fat panch", "weight", "medohar", "nabhi"] },
+  { slug: "mens", label: "Men's Vitality", words: ["men", "male", "shilajit", "vigour", "vigor", "shahi", "gold", "swarna", "stamina"] },
+  { slug: "womens", label: "Women's Wellness", words: ["women", "female", "menstru", "mother", "postnatal", "luko", "leukorrh", "pradar", "safed pani"] },
   { slug: "mind", label: "Mind & Sleep", words: ["sleep", "stress", "calm", "mind", "anxiety", "brahmi", "relax"] },
 ] as const;
 

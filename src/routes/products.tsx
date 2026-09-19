@@ -37,7 +37,7 @@ export const Route = createFileRoute("/products")({
 });
 
 type Sort = "featured" | "price-asc" | "price-desc" | "name" | "rating";
-const PAGE = 9;
+const PAGE = 24;
 
 function Products() {
   const { products, categories } = Route.useLoaderData();

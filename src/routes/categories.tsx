@@ -50,13 +50,13 @@ function Categories() {
                       params={{ slug: c.slug }}
                       className="hover-lift group flex h-full flex-col border border-border bg-card"
                     >
-                      <span className="relative block aspect-[4/3] overflow-hidden bg-secondary">
+                      <span className="relative block aspect-[4/3] overflow-hidden bg-[#FAF7F2] p-4 flex items-center justify-center">
                         {cover ? (
                           <img
                             src={cover}
                             alt={c.name}
                             loading="lazy"
-                            className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
+                            className="h-full w-full object-contain transition-transform duration-[1200ms] group-hover:scale-105"
                           />
                         ) : null}
                       </span>

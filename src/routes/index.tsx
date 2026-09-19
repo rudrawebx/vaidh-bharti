@@ -484,12 +484,12 @@ function ProductsPreview() {
           {products.slice(0, 4).map((p, i) => (
             <Reveal key={p.slug} delay={i * 70}>
               <article className="hover-lift group flex h-full flex-col border border-border bg-card">
-                <Link to="/product/$slug" params={{ slug: p.slug }} className="block aspect-[4/5] overflow-hidden bg-secondary">
+                <Link to="/product/$slug" params={{ slug: p.slug }} className="relative block aspect-[4/5] overflow-hidden bg-[#FAF7F2] p-4 flex items-center justify-center">
                   <img
                     src={p.image}
                     alt={p.name}
                     loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
+                    className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                   />
                 </Link>
                 <div className="flex flex-1 flex-col p-6">

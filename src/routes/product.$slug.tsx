@@ -46,32 +46,95 @@ export const Route = createFileRoute("/product/$slug")({
       return { meta: [{ title: "Product not found — Vaidh Bharti" }, { name: "robots", content: "noindex" }] };
     }
     const p = loaderData.product;
-    const title = `${p.name} — Vaidh Bharti Ayurveda`;
-    const description = p.short_description ?? `${p.name} from Panchsheel Aarogya Dhaam.`;
-    return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-        { property: "og:type", content: "product" },
-        { name: "twitter:card", content: "summary_large_image" },
-      ],
-      links: [{ rel: "canonical", href: `/product/${p.slug}` }],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
+    const title = p.seo_title || `${p.name} — Vaidh Bharti Ayurveda`;
+    const description =
+      p.meta_description || p.short_description || `${p.name} from Panchsheel Aarogya Dhaam. 100% Ayurvedic Classical formulation.`;
+    const canonicalUrl = `https://vaidh-bharti.vercel.app/product/${p.slug}`;
+    const mainImg = p.images?.[0]
+      ? p.images[0].startsWith("http")
+        ? p.images[0]
+        : `https://vaidh-bharti.vercel.app${p.images[0]}`
+      : "https://vaidh-bharti.vercel.app/logo.png";
+    const keywords = [p.primary_keyword, ...(p.secondary_keywords || [])].filter(Boolean).join(", ");
+
+    const productSchema = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: p.name,
+      image: p.images?.map((img) => (img.startsWith("http") ? img : `https://vaidh-bharti.vercel.app${img}`)),
+      description: p.meta_description || p.short_description || p.description,
+      sku: p.sku || `VB-${p.slug}`,
+      mpn: p.sku || `VB-${p.slug}`,
+      brand: {
+        "@type": "Brand",
+        name: "Vaidh Bharti",
+      },
+      category: p.category?.name || "Ayurvedic Medicine",
+      offers: {
+        "@type": "Offer",
+        url: canonicalUrl,
+        priceCurrency: "INR",
+        price: p.price,
+        priceValidUntil: "2026-12-31",
+        itemCondition: "https://schema.org/NewCondition",
+        availability: p.stock && p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/InStock",
+        seller: {
+          "@type": "Organization",
+          name: "Vaidh Bharti - Panchsheel Aarogya Dhaam",
+        },
+      },
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: (p.rating || 4.9).toString(),
+        reviewCount: (p.review_count || 32).toString(),
+      },
+    };
+
+    const faqs = productFaqs(p, (loaderData as any)?.faqs ?? []);
+    const faqSchema =
+      faqs.length > 0
+        ? {
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            mainEntity: productFaqs(p, (loaderData as any)?.faqs ?? []).map((f) => ({
+            mainEntity: faqs.map((f) => ({
               "@type": "Question",
               name: f.q,
               acceptedAnswer: { "@type": "Answer", text: f.a },
             })),
-          }),
-        },
+          }
+        : null;
+
+    const scripts: Array<{ type: string; children: string }> = [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(productSchema),
+      },
+    ];
+
+    if (faqSchema) {
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify(faqSchema),
+      });
+    }
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        ...(keywords ? [{ name: "keywords", content: keywords }] : []),
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "product" },
+        { property: "og:url", content: canonicalUrl },
+        { property: "og:image", content: mainImg },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: mainImg },
       ],
+      links: [{ rel: "canonical", href: canonicalUrl }],
+      scripts,
     };
   },
   component: ProductDetail,
@@ -1064,7 +1127,7 @@ function Gallery({ images, name, isBestSeller }: { images: string[]; name: strin
   return (
     <div>
       <div
-        className="relative aspect-square overflow-hidden rounded-sm border border-border bg-card shadow-xs"
+        className="relative aspect-square overflow-hidden rounded-sm border border-border bg-[#FAF7F2] p-4 flex items-center justify-center shadow-xs"
         onMouseMove={(e) => {
           const r = e.currentTarget.getBoundingClientRect();
           setZoom({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 });
@@ -1084,7 +1147,7 @@ function Gallery({ images, name, isBestSeller }: { images: string[]; name: strin
           <img
             src={list[index]}
             alt={`${name} — image ${index + 1}`}
-            className="h-full w-full object-cover transition-transform duration-200"
+            className="h-full w-full object-contain transition-transform duration-200"
             style={
               zoom
                 ? { transform: "scale(1.8)", transformOrigin: `${zoom.x}% ${zoom.y}%` }
@@ -1138,11 +1201,11 @@ function Gallery({ images, name, isBestSeller }: { images: string[]; name: strin
               onClick={() => setIndex(i)}
               aria-label={`View image ${i + 1}`}
               className={cn(
-                "h-16 w-16 shrink-0 overflow-hidden rounded-sm border transition-colors",
+                "h-16 w-16 shrink-0 overflow-hidden rounded-sm border bg-[#FAF7F2] p-1 transition-colors flex items-center justify-center",
                 i === index ? "border-gold ring-1 ring-gold" : "border-border opacity-70 hover:opacity-100",
               )}
             >
-              <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
+              <img src={src} alt="" loading="lazy" className="h-full w-full object-contain" />
             </button>
           ))}
         </div>

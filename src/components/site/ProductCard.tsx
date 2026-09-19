@@ -44,7 +44,7 @@ export function ProductCard({
         <Link
           to="/product/$slug"
           params={{ slug: product.slug }}
-          className="relative block aspect-[4/5] overflow-hidden bg-secondary"
+          className="relative block aspect-[4/5] overflow-hidden bg-[#FAF7F2] p-4 flex items-center justify-center"
         >
           {product.images[0] ? (
             <img
@@ -52,7 +52,7 @@ export function ProductCard({
               alt={product.name}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
+              className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
             />
           ) : null}
         </Link>

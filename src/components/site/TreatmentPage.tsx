@@ -31,7 +31,7 @@ export function TreatmentPage({ slug, image, imageAlt }: { slug: string; image: 
               </p>
               <div className="pt-2">
                 <Link
-                  to="/contact"
+                  to="/book"
                   className="inline-flex items-center gap-2 rounded-sm bg-primary px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground"
                 >
                   Book a Consultation

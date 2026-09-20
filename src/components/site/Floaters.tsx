@@ -34,7 +34,7 @@ export function MobileBar() {
         WhatsApp
       </a>
       <Link
-        to="/contact"
+        to="/book"
         className="flex min-h-14 flex-col items-center justify-center gap-1 bg-primary text-[11px] font-semibold uppercase tracking-[0.1em] text-primary-foreground"
       >
         <CalendarCheck className="h-4 w-4" />

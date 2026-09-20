@@ -11,6 +11,7 @@ export const site = {
   owner: "Jitender Bharti",
   founder: "Vaidh Jitender Bharti",
   tagline: "Ayurved Amrit Hai, Ise Apnaao",
+  url: "https://vaidhbharti.com",
   phone: "+919996415501",
   phoneDisplay: "+91 99964 15501",
   email: "vaidbharti80@gmail.com",
@@ -26,6 +27,8 @@ export const site = {
   googleReviews:
     "https://www.google.com/search?q=vaidh+bharti+panchsheel+aarogya+dhaam+hansi",
 };
+
+export const siteUrl = site.url;
 
 export const whatsappHref = `https://wa.me/${site.phone.replace("+", "")}?text=${encodeURIComponent(
   site.whatsappMessage,

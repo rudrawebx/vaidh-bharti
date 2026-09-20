@@ -104,7 +104,7 @@ function Treatments() {
             ))}
           </ol>
           <Link
-            to="/contact"
+            to="/book"
             className="mt-12 inline-flex rounded-sm bg-primary px-8 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground"
           >
             Book a Consultation

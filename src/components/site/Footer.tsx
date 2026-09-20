@@ -17,7 +17,7 @@ const footerSections: FooterSection[] = [
       { title: "About us", href: "/about" },
       { title: "Treatments", href: "/treatments" },
       { title: "Shop Products", href: "/products" },
-      { title: "Book Consultation", href: "/booking" },
+      { title: "Book Consultation", href: "/book" },
       { title: "Contact us", href: "/contact" },
     ],
   },

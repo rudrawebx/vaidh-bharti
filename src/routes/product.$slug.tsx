@@ -49,19 +49,19 @@ export const Route = createFileRoute("/product/$slug")({
     const title = p.seo_title || `${p.name} — Vaidh Bharti Ayurveda`;
     const description =
       p.meta_description || p.short_description || `${p.name} from Panchsheel Aarogya Dhaam. 100% Ayurvedic Classical formulation.`;
-    const canonicalUrl = `https://vaidh-bharti.vercel.app/product/${p.slug}`;
+    const canonicalUrl = `${site.url}/product/${p.slug}`;
     const mainImg = p.images?.[0]
       ? p.images[0].startsWith("http")
         ? p.images[0]
-        : `https://vaidh-bharti.vercel.app${p.images[0]}`
-      : "https://vaidh-bharti.vercel.app/logo.png";
+        : `${site.url}${p.images[0]}`
+      : `${site.url}/logo.png`;
     const keywords = [p.primary_keyword, ...(p.secondary_keywords || [])].filter(Boolean).join(", ");
 
     const productSchema = {
       "@context": "https://schema.org",
       "@type": "Product",
       name: p.name,
-      image: p.images?.map((img) => (img.startsWith("http") ? img : `https://vaidh-bharti.vercel.app${img}`)),
+      image: p.images?.map((img) => (img.startsWith("http") ? img : `${site.url}${img}`)),
       description: p.meta_description || p.short_description || p.description,
       sku: p.sku || `VB-${p.slug}`,
       mpn: p.sku || `VB-${p.slug}`,

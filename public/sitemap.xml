@@ -2,25 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Core Pages -->
   <url>
-    <loc>https://vaidh-bharti.vercel.app/</loc>
+    <loc>https://vaidhbharti.com/</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/about</loc>
+    <loc>https://vaidhbharti.com/about</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/products</loc>
+    <loc>https://vaidhbharti.com/products</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/categories</loc>
+    <loc>https://vaidhbharti.com/categories</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -28,25 +28,25 @@
 
   <!-- Product Categories -->
   <url>
-    <loc>https://vaidh-bharti.vercel.app/category/powders</loc>
+    <loc>https://vaidhbharti.com/category/powders</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/category/oils</loc>
+    <loc>https://vaidhbharti.com/category/oils</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/category/shilajit</loc>
+    <loc>https://vaidhbharti.com/category/shilajit</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/category/capsules</loc>
+    <loc>https://vaidhbharti.com/category/capsules</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -54,61 +54,61 @@
 
   <!-- Product Catalog (Exact 10 Master Products) -->
   <url>
-    <loc>https://vaidh-bharti.vercel.app/product/pit-shanti-powder</loc>
+    <loc>https://vaidhbharti.com/product/pit-shanti-powder</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/product/luko-panch-powder</loc>
+    <loc>https://vaidhbharti.com/product/luko-panch-powder</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/product/panch-liv-powder</loc>
+    <loc>https://vaidhbharti.com/product/panch-liv-powder</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/product/nabhi-oil</loc>
+    <loc>https://vaidhbharti.com/product/nabhi-oil</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/product/panch-vat-powder</loc>
+    <loc>https://vaidhbharti.com/product/panch-vat-powder</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/product/fat-panch-powder</loc>
+    <loc>https://vaidhbharti.com/product/fat-panch-powder</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/product/shilajit</loc>
+    <loc>https://vaidhbharti.com/product/shilajit</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/product/red-onion-hair-oil</loc>
+    <loc>https://vaidhbharti.com/product/red-onion-hair-oil</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/product/panch-fresh-powder</loc>
+    <loc>https://vaidhbharti.com/product/panch-fresh-powder</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/product/shahi-panch-gold-extra</loc>
+    <loc>https://vaidhbharti.com/product/shahi-panch-gold-extra</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -116,25 +116,25 @@
 
   <!-- Clinic, Panchakarma & Treatments -->
   <url>
-    <loc>https://vaidh-bharti.vercel.app/treatments</loc>
+    <loc>https://vaidhbharti.com/treatments</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/treatments/nadi-pariksha</loc>
+    <loc>https://vaidhbharti.com/treatments/nadi-pariksha</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/treatments/panchakarma</loc>
+    <loc>https://vaidhbharti.com/treatments/panchakarma</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/treatments/ayurvedic-consultation</loc>
+    <loc>https://vaidhbharti.com/treatments/ayurvedic-consultation</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -142,19 +142,19 @@
 
   <!-- Booking & Contact -->
   <url>
-    <loc>https://vaidh-bharti.vercel.app/book</loc>
+    <loc>https://vaidhbharti.com/book</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/contact</loc>
+    <loc>https://vaidhbharti.com/contact</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://vaidh-bharti.vercel.app/faq</loc>
+    <loc>https://vaidhbharti.com/faq</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

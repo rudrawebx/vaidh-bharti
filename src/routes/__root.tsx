@@ -21,19 +21,37 @@ import { site } from "@/lib/site";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-[70vh] items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <p className="eyebrow">Page not found</p>
-        <h1 className="mt-4 font-display text-5xl">This page has moved on</h1>
-        <p className="mt-4 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <div className="flex min-h-[70vh] items-center justify-center bg-background px-4 py-20">
+      <div className="max-w-lg text-center">
+        <p className="eyebrow">404 · Page Not Found</p>
+        <h1 className="mt-4 font-display text-4xl sm:text-5xl text-foreground">This page could not be found</h1>
+        <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+          The link you followed may be broken or the page may have been moved. Please explore our core clinic pages:
         </p>
-        <div className="mt-8">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-sm bg-primary px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-forest-deep"
+            className="inline-flex items-center justify-center rounded-sm bg-primary px-5 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground transition-colors hover:bg-forest-deep"
           >
             Return Home
+          </Link>
+          <Link
+            to="/products"
+            className="inline-flex items-center justify-center rounded-sm border border-border bg-card px-5 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary transition-colors hover:border-gold hover:text-gold"
+          >
+            Shop Products
+          </Link>
+          <Link
+            to="/book"
+            className="inline-flex items-center justify-center rounded-sm border border-border bg-card px-5 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary transition-colors hover:border-gold hover:text-gold"
+          >
+            Book Consultation
+          </Link>
+          <Link
+            to="/contact"
+            className="inline-flex items-center justify-center rounded-sm border border-border bg-card px-5 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary transition-colors hover:border-gold hover:text-gold"
+          >
+            Contact Clinic
           </Link>
         </div>
       </div>
@@ -91,9 +109,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "Vaidh Jitender Bharti" },
       { property: "og:site_name", content: "Vaidh Bharti — Panchsheel Aarogya Dhaam" },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://vaidh-bharti.vercel.app/logo.png" },
+      { property: "og:image", content: `${site.url}/logo.png` },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: "https://vaidh-bharti.vercel.app/logo.png" },
+      { name: "twitter:image", content: `${site.url}/logo.png` },
       { name: "robots", content: "index, follow" },
       { name: "theme-color", content: "#2f4438" },
     ],
@@ -115,6 +133,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@type": "MedicalBusiness",
           name: "Panchsheel Aarogya Dhaam",
           alternateName: "Vaidh Bharti",
+          url: site.url,
+          logo: `${site.url}/logo.png`,
+          image: `${site.url}/logo.png`,
           description:
             "Traditional Ayurvedic wellness centre offering consultation, Nadi Pariksha, Panchakarma and herbal formulations.",
           founder: { "@type": "Person", name: "Jitender Bharti", alternateName: "Vaidh Jitender Bharti" },

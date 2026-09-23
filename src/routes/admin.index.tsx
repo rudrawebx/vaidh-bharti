@@ -19,6 +19,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { inr } from "@/lib/site";
 import { seedCatalogToDatabase } from "@/lib/catalog.functions";
+import { getAdminDashboardStats } from "@/lib/orders.functions";
 
 export const Route = createFileRoute("/admin/")({ component: Dashboard });
 
@@ -28,21 +29,8 @@ function Dashboard() {
   const stats = useQuery({
     queryKey: ["admin-stats"],
     queryFn: async () => {
-      const [ordersRes, bookingsRes, productsRes, reviewsRes] = await Promise.all([
-        supabase
-          .from("orders")
-          .select("id,total,status,payment_status,payment_method,created_at,order_number,customer_name")
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("bookings")
-          .select("id,status,booking_date,customer_name,slot_time")
-          .order("booking_date", { ascending: false })
-          .limit(5),
-        supabase.from("products").select("id,stock,name,sku").order("stock"),
-        supabase.from("reviews").select("id").eq("status", "pending"),
-      ]);
-
-      const allOrders = ordersRes.data ?? [];
+      const data = await getAdminDashboardStats();
+      const allOrders = data.orders ?? [];
       const activeOrders = allOrders.filter((o) => o.status !== "cancelled");
       const totalRevenue = activeOrders.reduce((s, o) => s + Number(o.total), 0);
       const paidRevenue = activeOrders
@@ -68,10 +56,10 @@ function Dashboard() {
         pendingFulfillment,
         inTransit,
         recentOrders: allOrders.slice(0, 6),
-        bookings: bookingsRes.data ?? [],
-        lowStock: (productsRes.data ?? []).filter((p) => (p.stock ?? 0) <= 5),
-        totalProducts: (productsRes.data ?? []).length,
-        pendingReviews: (reviewsRes.data ?? []).length,
+        bookings: data.bookings ?? [],
+        lowStock: (data.products ?? []).filter((p: any) => (p.stock ?? 0) <= 5),
+        totalProducts: (data.products ?? []).length,
+        pendingReviews: data.pendingReviewsCount ?? 0,
       };
     },
   });

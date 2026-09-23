@@ -236,5 +236,125 @@ export async function runSchemaMigration(): Promise<{ success: boolean; executed
       return { success: false, executed: count, error: e.message };
     }
   }
+
+  // Seed default site settings
+  try {
+    await p.execute(
+      `INSERT INTO \`site_settings\` (\`key\`, \`value\`) VALUES
+       ('business_details', ?),
+       ('order_sequence', ?),
+       ('shipping', ?),
+       ('notification_settings', ?)
+       ON DUPLICATE KEY UPDATE \`value\` = VALUES(\`value\`)`,
+      [
+        JSON.stringify({
+          legal_name: "Vaidh Bharti - Panchsheel Aarogya Dhaam",
+          owner_name: "Vaidh Jitender Bharti",
+          address: "Barwala Road, Near Shree Ram ITI, Hansi, Haryana 125033",
+          phone: "+91 99964 15501",
+          email: "vaidbharti80@gmail.com",
+          gstin: "",
+          order_prefix: "VB",
+          invoice_prefix: "INV",
+        }),
+        JSON.stringify({
+          next_order_number: 1001,
+          next_invoice_number: 1001,
+          year: 2026,
+        }),
+        JSON.stringify({
+          flat_rate: 60,
+          free_above: 999,
+          note: "Free delivery across India on orders above ₹999.",
+        }),
+        JSON.stringify({
+          admin_emails: ["vaidbharti80@gmail.com"],
+          whatsapp_phone: "+91 99964 15501",
+          notify_on_new_order: true,
+          notify_on_shipped: true,
+          cod_enabled: true,
+          online_enabled: true,
+        }),
+      ]
+    );
+
+    // Seed default categories
+    const categories = [
+      { id: "cat-1", slug: "powders", name: "Powders", description: "Classical churnas formulated according to ancient texts", sort_order: 1 },
+      { id: "cat-2", slug: "oils", name: "Oils", description: "Medicated tailams for pain relief, joints and hair care", sort_order: 2 },
+      { id: "cat-3", slug: "shilajit", name: "Shilajit", description: "Purified Himalayan mineral pitch for vitality", sort_order: 3 },
+      { id: "cat-4", slug: "capsules", name: "Capsules", description: "Standardized extracts in vegetarian capsules", sort_order: 4 },
+      { id: "cat-5", slug: "teas", name: "Herbal Teas", description: "Revitalizing daily wellness brews and decoctions", sort_order: 5 },
+    ];
+    for (const c of categories) {
+      await p.execute(
+        `INSERT INTO \`categories\` (\`id\`, \`name\`, \`slug\`, \`description\`, \`sort_order\`)
+         VALUES (?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE \`name\` = VALUES(\`name\`), \`description\` = VALUES(\`description\`)`,
+        [c.id, c.name, c.slug, c.description, c.sort_order]
+      );
+    }
+
+    // Seed default coupons
+    await p.execute(
+      `INSERT INTO \`coupons\` (\`id\`, \`code\`, \`discount_type\`, \`discount_value\`, \`min_order_amount\`, \`is_active\`)
+       VALUES
+       ('cp-1', 'AYURVEDA10', 'percent', 10.00, 499.00, 1),
+       ('cp-2', 'FIRST50', 'fixed', 50.00, 399.00, 1)
+       ON DUPLICATE KEY UPDATE \`code\` = VALUES(\`code\`)`
+    );
+
+    // Seed products & variants
+    const { getFallbackProducts } = await import("@/lib/catalog.functions");
+    const products = getFallbackProducts();
+    for (let idx = 0; idx < products.length; idx++) {
+      const prod = products[idx];
+      const cat = categories.find((c) => c.slug === prod.category?.slug);
+      await p.execute(
+        `INSERT INTO \`products\` (
+          \`id\`, \`name\`, \`slug\`, \`sku\`, \`short_description\`, \`description\`, \`benefits\`,
+          \`ingredients\`, \`usage_instructions\`, \`price\`, \`mrp\`, \`stock\`, \`net_quantity\`,
+          \`category_id\`, \`images\`, \`is_active\`, \`is_featured\`, \`is_best_seller\`, \`sort_order\`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE \`name\` = VALUES(\`name\`), \`price\` = VALUES(\`price\`), \`mrp\` = VALUES(\`mrp\`), \`stock\` = VALUES(\`stock\`), \`images\` = VALUES(\`images\`)`,
+        [
+          prod.id,
+          prod.name,
+          prod.slug,
+          prod.sku || null,
+          prod.short_description || null,
+          prod.description || null,
+          JSON.stringify(prod.benefits || []),
+          prod.ingredients || null,
+          prod.usage_instructions || null,
+          prod.price,
+          prod.mrp,
+          prod.stock || 50,
+          prod.net_quantity || null,
+          cat ? cat.id : null,
+          JSON.stringify(prod.images || []),
+          prod.is_featured ? 1 : 0,
+          prod.is_best_seller ? 1 : 0,
+          idx + 1,
+        ]
+      );
+
+      if (prod.variants && prod.variants.length > 0) {
+        for (let vidx = 0; vidx < prod.variants.length; vidx++) {
+          const v = prod.variants[vidx];
+          await p.execute(
+            `INSERT INTO \`product_variants\` (\`id\`, \`product_id\`, \`label\`, \`price\`, \`mrp\`, \`stock\`, \`sort_order\`)
+             VALUES (?, ?, ?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE \`price\` = VALUES(\`price\`), \`mrp\` = VALUES(\`mrp\`), \`stock\` = VALUES(\`stock\`)`,
+            [v.id || `${prod.id}-var-${vidx + 1}`, prod.id, v.label, v.price, v.mrp, v.stock || 50, vidx + 1]
+          );
+        }
+      }
+    }
+  } catch (seedErr: any) {
+    console.warn("[Hostinger MySQL Seed Notice]:", seedErr.message);
+  }
+
   return { success: true, executed: count };
 }
+

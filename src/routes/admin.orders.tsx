@@ -18,8 +18,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { inr, site } from "@/lib/site";
-import { updateAdminOrderStatus, resendOrderNotification } from "@/lib/orders.functions";
+import { updateAdminOrderStatus, resendOrderNotification, listAdminOrders } from "@/lib/orders.functions";
 import { InvoiceBill } from "@/components/site/InvoiceBill";
 
 export const Route = createFileRoute("/admin/orders")({ component: AdminOrders });
@@ -120,19 +119,14 @@ function AdminOrders() {
   const ordersQuery = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("orders")
-        .select(
-          "id,order_number,invoice_number,invoice_date,status,payment_status,payment_method,total,subtotal,shipping_amount,discount_amount,tax_amount,coupon_code,tracking_number,courier,created_at,customer_name,phone,email,address_line1,address_line2,city,state,pincode,notes,audit_log,cancelled_reason,refund_reference,order_items(product_name,variant_label,quantity,unit_price)",
-        )
-        .order("created_at", { ascending: false });
-
-      if (error) {
+      try {
+        const data = await listAdminOrders();
+        return data ?? [];
+      } catch (error: any) {
         console.error("Error fetching orders:", error);
         toast.error("Could not load orders.");
         return [];
       }
-      return data ?? [];
     },
   });
 

@@ -277,6 +277,66 @@ export const quoteCart = createServerFn({ method: "POST" })
     return priceCart(publicClient(), data.items, data.couponCode ?? null);
   });
 
+async function syncOrderToHostingerMysql(orderRecord: any, lines: any[]) {
+  try {
+    const { getDbPool } = await import("@/integrations/mysql/client.server");
+    const pool = getDbPool();
+    await pool.execute(
+      `INSERT INTO \`orders\` (
+        \`id\`, \`order_number\`, \`invoice_number\`, \`invoice_date\`, \`customer_name\`, \`phone\`, \`email\`,
+        \`address_line1\`, \`address_line2\`, \`city\`, \`state\`, \`pincode\`, \`payment_method\`,
+        \`payment_status\`, \`status\`, \`subtotal\`, \`discount_amount\`, \`shipping_amount\`,
+        \`tax_amount\`, \`total\`, \`coupon_code\`, \`notes\`, \`audit_log\`
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE \`updated_at\` = CURRENT_TIMESTAMP`,
+      [
+        orderRecord.id,
+        orderRecord.order_number,
+        orderRecord.invoice_number || null,
+        orderRecord.invoice_date || new Date(),
+        orderRecord.customer_name,
+        orderRecord.phone,
+        orderRecord.email || null,
+        orderRecord.address_line1,
+        orderRecord.address_line2 || null,
+        orderRecord.city,
+        orderRecord.state,
+        orderRecord.pincode,
+        orderRecord.payment_method,
+        orderRecord.payment_status || "pending",
+        orderRecord.status || "pending",
+        orderRecord.subtotal,
+        orderRecord.discount_amount || 0,
+        orderRecord.shipping_amount || 0,
+        orderRecord.tax_amount || 0,
+        orderRecord.total,
+        orderRecord.coupon_code || null,
+        orderRecord.notes || null,
+        JSON.stringify(orderRecord.audit_log || []),
+      ]
+    );
+
+    for (const l of lines) {
+      await pool.execute(
+        `INSERT INTO \`order_items\` (\`id\`, \`order_id\`, \`product_id\`, \`product_name\`, \`variant_label\`, \`quantity\`, \`unit_price\`, \`image_url\`)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          `item-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          orderRecord.id,
+          l.productId || l.product_id || null,
+          l.name || l.product_name,
+          l.variantLabel || l.variant_label || null,
+          l.qty || l.quantity || 1,
+          l.unitPrice || l.unit_price,
+          l.image || l.image_url || null,
+        ]
+      );
+    }
+  } catch (err: any) {
+    console.warn("[Hostinger MySQL Sync Notice]:", err.message);
+  }
+}
+
 // 2. Place Order (COD or Razorpay)
 export const placeOrder = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => orderSchema.parse(data))
@@ -361,6 +421,36 @@ export const placeOrder = createServerFn({ method: "POST" })
             quantity: l.qty,
             image_url: l.image,
           })),
+        );
+
+        // Sync order to Hostinger MySQL
+        await syncOrderToHostingerMysql(
+          {
+            id: order.id,
+            order_number: orderNumber,
+            invoice_number: invoiceNumber,
+            invoice_date: nowIso,
+            customer_name: c.name,
+            phone: c.phone,
+            email: c.email || null,
+            address_line1: c.address1,
+            address_line2: c.address2 || null,
+            city: c.city,
+            state: c.state,
+            pincode: c.pincode,
+            payment_method: data.paymentMethod,
+            payment_status: initialPaymentStatus,
+            status: initialStatus,
+            subtotal: priced.subtotal,
+            discount_amount: priced.discount,
+            shipping_amount: priced.shipping,
+            tax_amount: priced.tax,
+            total: priced.total,
+            coupon_code: priced.couponCode,
+            notes: c.notes || null,
+            audit_log: initialAudit,
+          },
+          priced.lines
         );
 
         // If coupon applied, increment usage count
@@ -597,7 +687,27 @@ export const lookupOrder = createServerFn({ method: "POST" })
     }
 
     const { data: order } = await query.maybeSingle();
-    return order;
+    if (order) return order;
+
+    // Fallback lookup from Hostinger MySQL
+    try {
+      const { queryOne, query: myQuery } = await import("@/integrations/mysql/client.server");
+      const myOrder = await queryOne<any>("SELECT * FROM `orders` WHERE `order_number` = ?", [cleanNum]);
+      if (myOrder) {
+        const items = await myQuery<any>(
+          "SELECT product_name, variant_label, quantity, unit_price, image_url FROM `order_items` WHERE `order_id` = ?",
+          [myOrder.id]
+        );
+        return {
+          ...myOrder,
+          order_items: items,
+        };
+      }
+    } catch (err: any) {
+      console.warn("Hostinger MySQL lookupOrder notice:", err.message);
+    }
+
+    return null;
   });
 
 // 6. Admin: Update Order Status & Shipping
@@ -784,10 +894,125 @@ export const getAdminOrderDetails = createServerFn({ method: "POST" })
         .order("created_at", { ascending: false }),
     ]);
 
-    if (!orderRes.data) throw new Error("Order not found");
+    if (!orderRes.data) {
+      // Fallback lookup from Hostinger MySQL
+      try {
+        const { queryOne, query: myQuery } = await import("@/integrations/mysql/client.server");
+        const myOrder = await queryOne<any>("SELECT * FROM `orders` WHERE `id` = ?", [data.orderId]);
+        if (myOrder) {
+          const items = await myQuery<any>(
+            "SELECT product_name, variant_label, quantity, unit_price, image_url FROM `order_items` WHERE `order_id` = ?",
+            [myOrder.id]
+          );
+          return {
+            order: { ...myOrder, order_items: items },
+            notifications: [],
+          };
+        }
+      } catch {}
+      throw new Error("Order not found");
+    }
 
     return {
       order: orderRes.data,
       notifications: notifRes.data ?? [],
     };
   });
+
+// 9. Admin: List All Orders (Dual Supabase & Hostinger MySQL)
+export const listAdminOrders = createServerFn({ method: "GET" }).handler(async () => {
+  // 1. Try Supabase
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("orders")
+      .select("*, order_items(*)")
+      .order("created_at", { ascending: false });
+    if (!error && data && data.length > 0) {
+      return data;
+    }
+  } catch (err: any) {
+    console.warn("Supabase listAdminOrders notice:", err.message);
+  }
+
+  // 2. Fallback to Hostinger MySQL
+  try {
+    const { query } = await import("@/integrations/mysql/client.server");
+    const myOrders = await query<any>("SELECT * FROM `orders` ORDER BY `created_at` DESC");
+    if (myOrders && myOrders.length > 0) {
+      const items = await query<any>("SELECT * FROM `order_items`");
+      return myOrders.map((o) => ({
+        ...o,
+        order_items: items.filter((it) => it.order_id === o.id),
+      }));
+    }
+  } catch (err: any) {
+    console.warn("Hostinger MySQL listAdminOrders notice:", err.message);
+  }
+
+  return [];
+});
+
+// 10. Admin: Get Dashboard Aggregated Stats (Dual Supabase & Hostinger MySQL)
+export const getAdminDashboardStats = createServerFn({ method: "GET" }).handler(async () => {
+  // 1. Try Supabase
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [ordersRes, bookingsRes, productsRes] = await Promise.all([
+      supabaseAdmin
+        .from("orders")
+        .select("id,total,status,payment_status,payment_method,created_at,order_number,customer_name")
+        .order("created_at", { ascending: false }),
+      supabaseAdmin
+        .from("bookings")
+        .select("id,status,booking_date,customer_name,slot_time")
+        .order("booking_date", { ascending: false })
+        .limit(5),
+      supabaseAdmin.from("products").select("id,stock,name,sku").order("stock"),
+    ]);
+
+    if ((ordersRes.data && ordersRes.data.length > 0) || (productsRes.data && productsRes.data.length > 0)) {
+      return {
+        orders: ordersRes.data ?? [],
+        bookings: bookingsRes.data ?? [],
+        products: productsRes.data ?? [],
+        pendingReviewsCount: 0,
+      };
+    }
+  } catch (err: any) {
+    console.warn("Supabase dashboard stats error:", err.message);
+  }
+
+  // 2. Fallback to Hostinger MySQL
+  try {
+    const { query } = await import("@/integrations/mysql/client.server");
+    const [orders, bookings, products] = await Promise.all([
+      query<any>("SELECT id,total,status,payment_status,payment_method,created_at,order_number,customer_name FROM `orders` ORDER BY `created_at` DESC"),
+      query<any>("SELECT id,status,booking_date,customer_name,slot_time FROM `bookings` ORDER BY `booking_date` DESC LIMIT 5"),
+      query<any>("SELECT id,stock,name,sku FROM `products` ORDER BY `stock` ASC"),
+    ]);
+
+    if (products && products.length > 0) {
+      return {
+        orders: orders ?? [],
+        bookings: bookings ?? [],
+        products: products ?? [],
+        pendingReviewsCount: 0,
+      };
+    }
+  } catch (err: any) {
+    console.warn("Hostinger MySQL dashboard stats error:", err.message);
+  }
+
+  // 3. Fallback to local catalog products if both databases are empty
+  const { getFallbackProducts } = await import("./catalog.functions");
+  const fallbackProducts = getFallbackProducts();
+  return {
+    orders: [],
+    bookings: [],
+    products: fallbackProducts.map((p) => ({ id: p.id, stock: p.stock, name: p.name, sku: p.sku })),
+    pendingReviewsCount: 0,
+  };
+});
+
+

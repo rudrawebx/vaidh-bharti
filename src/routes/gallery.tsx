@@ -18,7 +18,7 @@ const categories = [
 ] as const;
 
 const shots = [
-  { src: "/assets/real/vaidh-jitender-bharti.png", alt: "Vaidh Jitender Bharti, Founder & Owner of Panchsheel Aarogya Dhaam", cat: "Vaidh Jitender Bharti" },
+  { src: "/assets/portrait.jpg", alt: "Vaidh Jitender Bharti, Founder & Owner of Panchsheel Aarogya Dhaam", cat: "Vaidh Jitender Bharti" },
   { src: "/assets/real/clinic-cottage.jpeg", alt: "Traditional bamboo cottage therapy suites at Panchsheel Aarogya Dhaam", cat: "The Centre" },
   { src: "/assets/real/clinic-lawn.jpeg", alt: "Lush botanical gardens and green healing lawns", cat: "The Centre" },
   { src: "/assets/real/vaidh-meditation.png", alt: "Vaidh Jitender Bharti in morning meditation at the ashram", cat: "Vaidh Jitender Bharti" },

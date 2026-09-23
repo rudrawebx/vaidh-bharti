@@ -90,36 +90,28 @@ function Gallery() {
             ))}
           </ul>
 
-          {/* Uncropped Responsive Masonry Gallery */}
+          {/* Uncropped Responsive Masonry Gallery without names below */}
           <div className="mt-10 columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
             {visible.map((s, i) => (
               <div key={`${s.alt}-${i}`} className="break-inside-avoid">
                 <button
                   type="button"
                   onClick={() => setActive(s)}
-                  className="group block w-full overflow-hidden rounded-md border border-border/80 bg-card p-2.5 text-left shadow-sm transition-all duration-300 hover:border-gold hover:shadow-md"
+                  className="group block w-full overflow-hidden rounded-lg border border-border/80 bg-card shadow-sm transition-all duration-300 hover:border-gold hover:shadow-lg focus:outline-none"
                   aria-label={`Open full image: ${s.alt}`}
                 >
-                  <div className="relative overflow-hidden rounded bg-[#FAF7F2] flex items-center justify-center">
+                  <div className="relative overflow-hidden bg-[#FAF7F2] flex items-center justify-center">
                     <img
                       src={s.src}
                       alt={s.alt}
                       loading="lazy"
-                      className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+                      className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.03]"
                     />
-                    <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20 flex items-center justify-center">
-                      <span className="opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-full bg-background/90 p-2.5 text-foreground shadow-lg">
+                    <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/25 flex items-center justify-center">
+                      <span className="opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-110 rounded-full bg-background/90 p-3 text-foreground shadow-xl">
                         <ZoomIn className="h-5 w-5 text-gold" />
                       </span>
                     </div>
-                  </div>
-                  <div className="px-2 pt-3 pb-1">
-                    <span className="inline-block text-[10px] font-semibold uppercase tracking-[0.16em] text-gold">
-                      {s.cat}
-                    </span>
-                    <p className="mt-1 text-xs font-medium leading-snug text-foreground/90">
-                      {s.alt}
-                    </p>
                   </div>
                 </button>
               </div>
@@ -133,18 +125,12 @@ function Gallery() {
           <DialogTitle className="sr-only">{active?.alt ?? "Image"}</DialogTitle>
           {active ? (
             <div className="flex flex-col items-center">
-              <div className="relative flex max-h-[82vh] w-full items-center justify-center">
+              <div className="relative flex max-h-[85vh] w-full items-center justify-center">
                 <img
                   src={active.src}
                   alt={active.alt}
-                  className="max-h-[82vh] max-w-full rounded object-contain shadow-2xl"
+                  className="max-h-[85vh] max-w-full rounded object-contain shadow-2xl"
                 />
-              </div>
-              <div className="mt-3 w-full text-center">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-gold">
-                  {active.cat}
-                </span>
-                <p className="mt-0.5 text-sm text-white/90">{active.alt}</p>
               </div>
             </div>
           ) : null}

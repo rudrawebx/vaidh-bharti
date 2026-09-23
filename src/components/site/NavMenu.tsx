@@ -16,6 +16,7 @@ export const servicesLinks: NavLeaf[] = [
 export const companyLinks: NavLeaf[] = [
   { label: "About Us", to: "/about", desc: "Vaidh Bharti and Panchsheel Aarogya Dhaam" },
   { label: "Our Story", to: "/our-story", desc: "How the centre came to be" },
+  { label: "Gallery", to: "/gallery", desc: "Inside Panchsheel Aarogya Dhaam" },
   { label: "Testimonials", to: "/testimonials", desc: "Words from those we have cared for" },
 ];
 

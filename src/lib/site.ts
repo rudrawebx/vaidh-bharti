@@ -175,7 +175,7 @@ export const journey = [
 export type Product = {
   slug: string;
   name: string;
-  category: "Oils" | "Powders" | "Shilajit" | "Capsules";
+  category: "Oils" | "Powders" | "Shilajit" | "Capsules" | "Herbal Teas";
   price?: number | undefined;
   short: string;
   description: string;
@@ -185,14 +185,14 @@ export type Product = {
   image: string;
 };
 
-export const productCategories = ["All", "Oils", "Powders", "Shilajit", "Capsules"] as const;
+export const productCategories = ["All", "Oils", "Powders", "Shilajit", "Capsules", "Herbal Teas"] as const;
 
 export const products: Product[] = [
   {
     slug: "pit-shanti-powder",
     name: "Pit Shanti Powder",
     category: "Powders",
-    price: 699,
+    price: 959,
     short: "Soothes severe hyperacidity, acid reflux, peptic ulcers & internal Pitta burning.",
     description:
       "Time-tested classical Ayurvedic churna formulated under Vaidya supervision with Kamdudha, Praval Pishti, Shankh Bhasma, and Mulethi for instant and prolonged relief from acid heartburn and excess Pitta.",
@@ -209,7 +209,7 @@ export const products: Product[] = [
     slug: "luko-panch-powder",
     name: "Luko Panch Powder",
     category: "Powders",
-    price: 899,
+    price: 799,
     short: "Complete Shweta Pradara & hormonal vitality herbal blend for women's wellness.",
     description:
       "Rooted in ancient Stri-Roga Chikitsa, featuring Lodhra, Ashoka, Shatavari, and Pushyanug Churna herbs to maintain natural flora, reduce fatigue, and restore pelvic strength.",
@@ -226,7 +226,7 @@ export const products: Product[] = [
     slug: "panch-liv-powder",
     name: "Panch Liv Powder",
     category: "Powders",
-    price: 699,
+    price: 749,
     short: "Yakrit Rasayana for deep liver detox, sluggish digestion & bile secretion.",
     description:
       "Formulated with Bhumi Amla, Kalmegh, Kutki, and Punarnava to protect hepatocytes, enhance bile flow, and relieve symptoms of fatty liver and poor appetite.",
@@ -243,7 +243,7 @@ export const products: Product[] = [
     slug: "nabhi-oil",
     name: "Nabhi Oil",
     category: "Oils",
-    price: 599,
+    price: 500,
     short: "Traditional belly button Ayurvedic taila for core digestion & cellular glow.",
     description:
       "Handcrafted herbal oil infused with Castor, Mustard, Neem, and Til Taila using classical taila paka vidhi. Nourishes the Nabhi (umbilicus) to balance bodily energies.",
@@ -260,7 +260,7 @@ export const products: Product[] = [
     slug: "panch-vat-powder",
     name: "Panch Vat Powder",
     category: "Powders",
-    price: 899,
+    price: 1124,
     short: "Potent Sandhivata churna for knee flexibility, stiffness relief & joint lubrication.",
     description:
       "Vaidya-supervised classical formulation enriched with Yograj Guggulu, Rasna, Ashwagandha, and Shallaki to pacify aggravated Vata dosha and support healthy articular cartilage.",
@@ -277,7 +277,7 @@ export const products: Product[] = [
     slug: "fat-panch-powder",
     name: "Fat Panch Powder",
     category: "Powders",
-    price: 999,
+    price: 1199,
     short: "Medohar Ayurvedic formula for natural metabolism, gut cleansing & lipid balance.",
     description:
       "Classical Ayurvedic formulation combining Triphala, Medohar Guggulu, Nagarmotha, and Agnimantha to stimulate digestive fire (Deepana-Pachana) and support natural weight management.",
@@ -291,10 +291,27 @@ export const products: Product[] = [
     image: "/assets/products/fat-panch-powder-front.png",
   },
   {
+    slug: "shahi-panch-powder",
+    name: "Shahi Panch Powder",
+    category: "Powders",
+    price: 1499,
+    short: "Classical Ayurvedic Rasayana churna with Kesar & Swarna Bhasma for peak vitality and vigor.",
+    description:
+      "Prestigious classical Ayurvedic Rasayana formulation crafted at Panchsheel Aarogya Dhaam. Infused with Swarna Bhasma, Kesar, Makardhwaj and Ashwagandha to rebuild stamina, nourish bodily tissues, and restore inner strength.",
+    benefits: [
+      "Fortified with Kesar (Saffron), Makardhwaj and Swarna Bhasma",
+      "Deeply nourishes all 7 Dhatus to rebuild stamina and vitality",
+      "Combats chronic fatigue, nervous exhaustion and physical burnout",
+    ],
+    ingredients: "Swarna Bhasma, Kesar, Makardhwaj, Ashwagandha, Safed Musli, Kaunch Beej, Gokshura, Akarkara, Jaiphal, Javitri, Vang Bhasma, Shuddha Shilajit.",
+    usage: "Take 2 to 3 gm daily with warm milk or as directed by the physician. Best taken before bedtime.",
+    image: "/assets/products/shahi-panch-powder-front.png",
+  },
+  {
     slug: "shilajit",
     name: "Shilajit",
     category: "Shilajit",
-    price: 999,
+    price: 799,
     short: "100% Sun-dried purified high-altitude Shilajit resin with 75%+ Fulvic Acid.",
     description:
       "Directly sourced from high-altitude Himalayan rock crevices and purified via authentic classical Shodhana (Surya Tapi). Delivers natural bio-available minerals and vitality.",
@@ -311,7 +328,7 @@ export const products: Product[] = [
     slug: "red-onion-hair-oil",
     name: "Red Onion Hair Oil",
     category: "Oils",
-    price: 499,
+    price: 359,
     short: "Classical herbal hair elixir with Red Onion, Bhringraj & Brahmi for hair fall control.",
     description:
       "Formulated with cold-pressed botanical oils and ancient Keshya herbs to strengthen hair roots, control dandruff, and promote lustrous density without greasy residue.",
@@ -328,7 +345,7 @@ export const products: Product[] = [
     slug: "panch-fresh-powder",
     name: "Panch Fresh Powder",
     category: "Powders",
-    price: 449,
+    price: 269,
     short: "Gentle yet potent Ayurvedic Virechana churna for chronic constipation & bowel regularity.",
     description:
       "Time-tested Ayurvedic colon-cleansing formula crafted with Sanay Patti, Haritaki, Saunf, Ajwain, Sendha Namak and Nishoth to stimulate natural peristalsis without dependency.",
@@ -342,21 +359,140 @@ export const products: Product[] = [
     image: "/assets/products/panch-fresh-powder-front.png",
   },
   {
+    slug: "shahi-panch-24x7",
+    name: "Shahi Panch 24x7",
+    category: "Capsules",
+    price: 674,
+    short: "Daily classical Ayurvedic Rasayana capsules for round-the-clock stamina & vitality (30 Caps).",
+    description:
+      "Formulated for active daily vitality with pure Ashwagandha, Shuddha Shilajit, Safed Musli and essential micro-minerals to sustain energy and combat routine exhaustion.",
+    benefits: [
+      "Provides 24x7 sustained energy and stamina support",
+      "Contains purified Shilajit, Ashwagandha and Safed Musli",
+      "Supports stress recovery and combats mental fatigue",
+    ],
+    ingredients: "Shuddha Shilajit, Ashwagandha, Safed Musli, Kaunch Beej, Gokshura, Shatavari, Vidarikand, Akarkara, Yashad Bhasma.",
+    usage: "Take 1 capsule twice daily with warm water or milk after meals, or as directed by physician.",
+    image: "/assets/products/shahi-panch-gold-front.png",
+  },
+  {
+    slug: "vatt-tea",
+    name: "Vatt Tea",
+    category: "Herbal Teas",
+    price: 368,
+    short: "Classical Ayurvedic Vata-balancing herbal tea for calming nervous restlessness & stiff joints.",
+    description:
+      "Therapeutic herbal tea formulated with Rasna, Ashwagandha, Sunthi, Shankhpushpi, Bala, and Elaichi to gently warm the system, ground erratic energy, and relieve stiffness.",
+    benefits: [
+      "Pacifies aggravated Vata dosha and calms nervous tension",
+      "Soothes joint stiffness, body aches and muscular spasms",
+      "Promotes smooth digestion and relieves erratic bowel movement",
+    ],
+    ingredients: "Pluchea lanceolata (Rasna), Terminalia arjuna, Piper longum, Ashwagandha, Sunthi, Bala, Brahmi, Shankhpushpi, Tejpatta, Elaichi, Lavanga.",
+    usage: "Boil 1/2 to 1 teaspoon in 150-200ml water for 3-5 minutes. Strain and enjoy warm twice daily.",
+    image: "/assets/products/vatt-tea-front.png",
+  },
+  {
+    slug: "uder-shaant-powder",
+    name: "Uder Shaant Powder",
+    category: "Powders",
+    price: 1039,
+    short: "Classical Grahani & IBS churna for frequent toilet urgency, loose stools & abdominal cramps.",
+    description:
+      "Specially formulated for frequent toilet urgency, chronic bowel sensitivity, IBS (Sangrahani), and cramping. Enriched with Kutaj, Bilva, Mustak, and Mochras to restore digestive peace.",
+    benefits: [
+      "Specially formulated for frequent toilet urgency and chronic loose bowels",
+      "Calms intestinal inflammation, bowel cramping and Sangrahani / IBS",
+      "Fortified with Kutaj, Bilva, Mustak and Dadim skin",
+    ],
+    ingredients: "Kutaj Chaal, Bilva Giri (Bael fruit), Mustak (Nagarmotha), Mochras, Dadim Twak, Ativisha, Lodhra, Shunthi, Dhanyak, Jeerak.",
+    usage: "Take 5 gm powder twice daily with lassi (buttermilk) or fresh curd after meals in morning and evening.",
+    image: "/assets/products/uder-shaant-powder-front.png",
+  },
+  {
     slug: "shahi-panch-gold-extra",
     name: "Shahi Panch Gold Extra",
     category: "Capsules",
-    price: 1499,
-    short: "Premium Ayurvedic Rasayana capsules fortified with Swarna Bhasma, Shilajit & Ashwagandha.",
+    price: 1124,
+    short: "Premium Ayurvedic Rasayana capsules with Swarna Bhasma, Shilajit & Ashwagandha (60 Caps).",
     description:
-      "Esteemed classical Ayurvedic Rasayana and Vajikarana preparation in convenient capsule form with Swarna Bhasma, Shuddha Shilajit, Kesar, Ashwagandha and Safed Musli for deep tissue nourishment and endurance.",
+      "Esteemed classical Ayurvedic Rasayana and Vajikarana preparation in a premium 60-capsule pack. Formulated with Swarna Bhasma, Shuddha Shilajit, Kesar, Ashwagandha and Safed Musli for deep tissue nourishment and endurance.",
     benefits: [
-      "Premium Ayurvedic Rasayana & Vajikarana medicine",
+      "Premium Ayurvedic Rasayana & Vajikarana medicine in 60-cap pack",
       "Fortified with Swarna Bhasma, Shilajit, Ashwagandha & Kesar",
       "Promotes physical endurance, vigor, and stress recovery",
     ],
     ingredients: "Swarna Bhasma, Shuddha Shilajit, Ashwagandha, Safed Musli, Kaunch Beej, Gokshura, Akarkara, Jaiphal, Kesar, Vang Bhasma.",
     usage: "Take 1 capsule twice daily with warm milk or as directed by your Ayurvedic physician.",
     image: "/assets/products/shahi-panch-gold-front.png",
+  },
+  {
+    slug: "arshopanch-powder",
+    name: "Arshopanch Powder",
+    category: "Powders",
+    price: 959,
+    short: "Targeted classical Ayurvedic churna providing soothing relief from piles, fissure & fistula.",
+    description:
+      "Specialized Ayurvedic proprietary medicine formulated with Suran (Jimikand), Nagkeshar, Neem Beej, Haritaki and Guggulu to shrink hemorrhoidal piles mass, relieve pain, and ease evacuation.",
+    benefits: [
+      "Relieves pain, swelling, burning and bleeding associated with piles and fissures",
+      "Promotes natural shrinkage of hemorrhoidal pile masses",
+      "Encourages smooth, strain-free morning bowel evacuation",
+    ],
+    ingredients: "Suran Kand, Nagkeshar, Neem Beej, Bakayan Beej, Haritaki, Nishoth, Shuddha Guggulu, Rasont, Daruharidra, Chitrak.",
+    usage: "Take 5 gm powder twice daily after meals with lassi (buttermilk) or curd in morning and evening.",
+    image: "/assets/products/arshopanch-powder-front.png",
+  },
+  {
+    slug: "pitt-tea",
+    name: "Pitt Tea",
+    category: "Herbal Teas",
+    price: 368,
+    short: "Cooling Ayurvedic Pitta-balancing herbal tea for soothing hyperacidity & internal heat.",
+    description:
+      "Authentic cooling herbal brew with Giloy, Saunf, Dhaniya, Amla, Shankhpushpi, Brahmi, and Gulab to reduce metabolic heat, soothe sour belching, and promote serene digestion.",
+    benefits: [
+      "Pacifies aggravated Pitta dosha and reduces internal metabolic heat",
+      "Relieves acidity, heartburn, sour throat and hot sensations",
+      "Enriched with Giloy, Saunf, Dhaniya, Amla, Shankhpushpi & Gulab",
+    ],
+    ingredients: "Giloy, Saunf, Amla, Gulab, Dhaniya, Shankhpushpi, Brahmi, Gokshura, Vasa, Mulethi, Elaichi, Lavanga.",
+    usage: "Take 1 spoon of tea and mix with 200ml water. Boil until quantity reduces to half. Strain and drink lukewarm twice daily.",
+    image: "/assets/products/pitt-tea-front.png",
+  },
+  {
+    slug: "arogya-tea",
+    name: "Arogya Tea",
+    category: "Herbal Teas",
+    price: 368,
+    short: "Everyday Ayurvedic wellness & Tridosha rejuvenation herbal tea with Arjuna, Mulethi & Tulsi.",
+    description:
+      "Master herbal formulation with 19 sacred botanicals including Terminalia arjuna, Mulethi, Haldi, Brahmi, Tulsi, and Anantmool for daily immunity, cardiovascular health, and vital energy.",
+    benefits: [
+      "Tridosha balancing blend for daily vitality and disease prevention",
+      "Cardiovascular and micro-circulatory support with Terminalia arjuna",
+      "Balances hormones and supports calm mental clarity with Brahmi & Tulsi",
+    ],
+    ingredients: "Arjuna Bark, Mulethi, Saunf, Sunthi, Haldi, Tejpatta, Bala, Brahmi, Dalchini, Anantmool, Amla, Tulsi, Kali Mirch, Gulab, Pippali, Kulanjan, Elaichi.",
+    usage: "Add a pinch of Arogya Tea to boiling water (150-200ml). Steep for 5-7 minutes. Strain and enjoy warm twice daily.",
+    image: "/assets/products/arogya-tea-front.png",
+  },
+  {
+    slug: "kapha-tea",
+    name: "Kapha Tea",
+    category: "Herbal Teas",
+    price: 368,
+    short: "Invigorating Ayurvedic Kapha-clearing herbal tea for respiratory clarity & sluggish digestion.",
+    description:
+      "Invigorating herbal brew with classical Trikatu herbs (Sunthi, Pippali, Kali Mirch), Baheda, Amla, Mulethi, and Lavanga to clear heavy congestion and kindle sluggish metabolism.",
+    benefits: [
+      "Clears heavy congestion from throat, chest, and nasal passages",
+      "Kindles sluggish digestive fire (Manda Agni) and accelerates metabolism",
+      "Formulated with Trikatu (Pippali, Sunthi, Kali Mirch), Baheda & Mulethi",
+    ],
+    ingredients: "Sunthi, Pippali, Kali Mirch, Baheda, Amla, Manjistha, Lavanga, Mulethi, Tejpatta, Dalchini, Elaichi.",
+    usage: "Take 1 spoon of tea and mix with 200ml water. Boil until quantity reduces to half. Strain and drink lukewarm twice daily.",
+    image: "/assets/products/kapha-tea-front.png",
   },
 ];
 

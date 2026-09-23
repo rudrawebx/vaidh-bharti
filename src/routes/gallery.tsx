@@ -21,12 +21,21 @@ const categories = [
 ] as const;
 
 const shots = [
-  { src: centreImg, alt: "Courtyard of the wellness centre with medicinal plants", cat: "The Centre", tall: true },
-  { src: panchakarmaImg, alt: "Panchakarma therapy room with brass vessels", cat: "Panchakarma", tall: false },
-  { src: nadiImg, alt: "Nadi Pariksha pulse assessment", cat: "Ayurvedic Therapies", tall: false },
-  { src: herbs, alt: "Ayurvedic herbs, roots and powders", cat: "Herbs & Formulations", tall: true },
-  { src: portraitUrl, alt: "Vaidh Jitender Bharti (Owner & Founder) at Panchsheel Aarogya Dhaam", cat: "Vaidh Jitender Bharti", tall: true },
-  { src: centreImg, alt: "Quiet corner of the wellness environment", cat: "The Centre", tall: false },
+  { src: "/assets/real/vaidh-jitender-bharti.png", alt: "Vaidh Jitender Bharti, Founder & Owner of Panchsheel Aarogya Dhaam", cat: "Vaidh Jitender Bharti", tall: true },
+  { src: "/assets/real/clinic-cottage.jpeg", alt: "Traditional bamboo cottage therapy suites at Panchsheel Aarogya Dhaam", cat: "The Centre", tall: true },
+  { src: "/assets/real/clinic-lawn.jpeg", alt: "Lush botanical gardens and green healing lawns", cat: "The Centre", tall: false },
+  { src: "/assets/real/vaidh-meditation.png", alt: "Vaidh Jitender Bharti in morning meditation at the ashram", cat: "Vaidh Jitender Bharti", tall: true },
+  { src: "/assets/real/dispensary-patients.jpeg", alt: "Ayurvedic consultation and dispensary at Panchsheel Aarogya Dhaam", cat: "Ayurvedic Therapies", tall: false },
+  { src: "/assets/real/herbal-spices.jpg", alt: "Authentic whole Ayurvedic herbs, roots and raw spices", cat: "Herbs & Formulations", tall: false },
+  { src: "/assets/real/stage-assembly.jpeg", alt: "Community health assembly and Ayurvedic guidance by Vaidh Jitender Bharti", cat: "Vaidh Jitender Bharti", tall: false },
+  { src: "/assets/real/cinnamon-mortar.jpg", alt: "Traditional stone pestle and mortar processing classical churnas", cat: "Herbs & Formulations", tall: true },
+  { src: "/assets/real/clinic-gardener.jpeg", alt: "Nurturing medicinal plants at the herbal garden", cat: "The Centre", tall: false },
+  { src: "/assets/real/herbal-tea-ceremony.jpg", alt: "Traditional preparation of restorative Ayurvedic herbal teas and kwath", cat: "Herbs & Formulations", tall: false },
+  { src: "/assets/real/vaidh-portrait-ashram.jpeg", alt: "Vaidh Jitender Bharti in consultation at the ashram", cat: "Vaidh Jitender Bharti", tall: false },
+  { src: "/assets/real/stage-ceremony.jpeg", alt: "Health seminar and felicitation ceremony at the centre", cat: "The Centre", tall: true },
+  { src: "/assets/real/stage-gathering.jpeg", alt: "Patients and wellness seekers gathered at Panchsheel Aarogya Dhaam", cat: "The Centre", tall: false },
+  { src: panchakarmaImg, alt: "Classical Panchakarma therapy setup with brass vessels", cat: "Panchakarma", tall: false },
+  { src: nadiImg, alt: "Classical Nadi Pariksha pulse assessment", cat: "Ayurvedic Therapies", tall: false },
 ];
 
 export const Route = createFileRoute("/gallery")({

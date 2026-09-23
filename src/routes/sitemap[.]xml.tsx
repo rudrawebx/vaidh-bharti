@@ -15,6 +15,7 @@ const paths = [
   "/category/oils",
   "/category/shilajit",
   "/category/capsules",
+  "/category/teas",
   "/book",
   "/testimonials",
   "/gallery",

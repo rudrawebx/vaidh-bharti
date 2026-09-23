@@ -84,19 +84,32 @@ export function NavDropdown({ label, items }: { label: string; items: NavLeaf[] 
   );
 }
 
+const defaultCategories = [
+  { name: "Powders", slug: "powders", description: "Classical Ayurvedic churnas & powders" },
+  { name: "Oils", slug: "oils", description: "Herbal hair & Nabhi wellness oils" },
+  { name: "Shilajit", slug: "shilajit", description: "Pure Himalayan Suryatapi Shilajit resin" },
+  { name: "Capsules", slug: "capsules", description: "Classical Ayurvedic herbs & Rasayana capsules" },
+  { name: "Herbal Teas", slug: "teas", description: "Therapeutic Tridosha balancing Ayurvedic herbal teas" },
+];
+
 /** Shop menu built from the real product categories in the database. */
 export function useShopLinks(): NavLeaf[] {
   const { data } = useQuery({
     queryKey: ["nav-categories"],
     staleTime: 5 * 60 * 1000,
-    queryFn: async () =>
-      (await supabase.from("categories").select("slug,name,description").eq("is_active", true).order("sort_order"))
-        .data ?? [],
+    queryFn: async () => {
+      try {
+        const res = await supabase.from("categories").select("slug,name,description").eq("is_active", true).order("sort_order");
+        if (res.data && res.data.length > 0) return res.data;
+      } catch {}
+      return defaultCategories;
+    },
   });
+  const catList = data && data.length > 0 ? data : defaultCategories;
   return [
     { label: "Shop All Products", to: "/products", desc: "Every preparation in one place" },
     { label: "All Categories", to: "/categories", desc: "Browse by product family" },
-    ...(data ?? []).map((c) => ({
+    ...catList.map((c) => ({
       label: c.name,
       to: `/category/${c.slug}`,
       desc: c.description ?? undefined,

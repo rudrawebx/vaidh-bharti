@@ -123,12 +123,12 @@ function About() {
         <Container>
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <img
-              src={centreImg}
-              alt="The peaceful courtyard at Panchsheel Aarogya Dhaam"
+              src="/assets/real/clinic-cottage.jpeg"
+              alt="Authentic traditional cottage therapy suites at Panchsheel Aarogya Dhaam"
               loading="lazy"
               width={1600}
               height={1104}
-              className="w-full rounded-sm object-cover"
+              className="w-full rounded-sm object-cover shadow-lg"
             />
             <div>
               <h2 className="text-3xl sm:text-4xl">Visit Panchsheel Aarogya Dhaam</h2>

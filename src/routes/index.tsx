@@ -599,10 +599,10 @@ function WhyUs() {
 
 function Gallery() {
   const shots = [
-    { src: centreImg, alt: "The centre courtyard with medicinal plants", span: "lg:col-span-2 lg:row-span-2" },
-    { src: panchakarmaImg, alt: "Panchakarma therapy room with brass vessels", span: "" },
-    { src: herbs, alt: "Ayurvedic herbs and formulations", span: "" },
-    { src: nadiImg, alt: "Nadi Pariksha pulse assessment", span: "lg:col-span-2" },
+    { src: "/assets/real/clinic-cottage.jpeg", alt: "Traditional bamboo cottage therapy suites at Panchsheel Aarogya Dhaam", span: "lg:col-span-2 lg:row-span-2" },
+    { src: "/assets/real/clinic-lawn.jpeg", alt: "Lush medicinal plant gardens and peaceful green lawns", span: "" },
+    { src: "/assets/real/herbal-spices.jpg", alt: "Authentic whole Ayurvedic herbs and classical preparations", span: "" },
+    { src: "/assets/real/dispensary-patients.jpeg", alt: "Dispensary and patient consultation at Panchsheel Aarogya Dhaam", span: "lg:col-span-2" },
   ];
   return (
     <section className="py-24 sm:py-32">

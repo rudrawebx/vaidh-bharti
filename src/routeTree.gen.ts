@@ -16,6 +16,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AyurvedaRouteImport } from './routes/ayurveda'
 import { Route as BookRouteImport } from './routes/book'
+import { Route as BookingRouteImport } from './routes/booking'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -27,6 +28,7 @@ import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as ShippingPolicyRouteImport } from './routes/shipping-policy'
+import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TestimonialsRouteImport } from './routes/testimonials'
@@ -84,6 +86,11 @@ const BookRoute = BookRouteImport.update({
   path: '/book',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookingRoute = BookingRouteImport.update({
+  id: '/booking',
+  path: '/booking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
@@ -137,6 +144,11 @@ const RefundPolicyRoute = RefundPolicyRouteImport.update({
 const ShippingPolicyRoute = ShippingPolicyRouteImport.update({
   id: '/shipping-policy',
   path: '/shipping-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -258,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/ayurveda': typeof AyurvedaRoute
   '/book': typeof BookRoute
+  '/booking': typeof BookingRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
@@ -269,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/products': typeof ProductsRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/shipping-policy': typeof ShippingPolicyRoute
+  '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/testimonials': typeof TestimonialsRoute
@@ -298,6 +312,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/ayurveda': typeof AyurvedaRoute
   '/book': typeof BookRoute
+  '/booking': typeof BookingRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
@@ -309,6 +324,7 @@ export interface FileRoutesByTo {
   '/products': typeof ProductsRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/shipping-policy': typeof ShippingPolicyRoute
+  '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/testimonials': typeof TestimonialsRoute
@@ -340,6 +356,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/ayurveda': typeof AyurvedaRoute
   '/book': typeof BookRoute
+  '/booking': typeof BookingRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
@@ -351,6 +368,7 @@ export interface FileRoutesById {
   '/products': typeof ProductsRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/shipping-policy': typeof ShippingPolicyRoute
+  '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/testimonials': typeof TestimonialsRoute
@@ -383,6 +401,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/ayurveda'
     | '/book'
+    | '/booking'
     | '/cart'
     | '/categories'
     | '/checkout'
@@ -394,6 +413,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/refund-policy'
     | '/shipping-policy'
+    | '/shop'
     | '/sitemap.xml'
     | '/terms'
     | '/testimonials'
@@ -423,6 +443,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/ayurveda'
     | '/book'
+    | '/booking'
     | '/cart'
     | '/categories'
     | '/checkout'
@@ -434,6 +455,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/refund-policy'
     | '/shipping-policy'
+    | '/shop'
     | '/sitemap.xml'
     | '/terms'
     | '/testimonials'
@@ -464,6 +486,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/ayurveda'
     | '/book'
+    | '/booking'
     | '/cart'
     | '/categories'
     | '/checkout'
@@ -475,6 +498,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/refund-policy'
     | '/shipping-policy'
+    | '/shop'
     | '/sitemap.xml'
     | '/terms'
     | '/testimonials'
@@ -507,6 +531,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   AyurvedaRoute: typeof AyurvedaRoute
   BookRoute: typeof BookRoute
+  BookingRoute: typeof BookingRoute
   CartRoute: typeof CartRoute
   CategoriesRoute: typeof CategoriesRoute
   CheckoutRoute: typeof CheckoutRoute
@@ -518,6 +543,7 @@ export interface RootRouteChildren {
   ProductsRoute: typeof ProductsRoute
   RefundPolicyRoute: typeof RefundPolicyRoute
   ShippingPolicyRoute: typeof ShippingPolicyRoute
+  ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   TestimonialsRoute: typeof TestimonialsRoute
@@ -577,6 +603,13 @@ declare module '@tanstack/react-router' {
       path: '/book'
       fullPath: '/book'
       preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/booking': {
+      id: '/booking'
+      path: '/booking'
+      fullPath: '/booking'
+      preLoaderRoute: typeof BookingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cart': {
@@ -654,6 +687,13 @@ declare module '@tanstack/react-router' {
       path: '/shipping-policy'
       fullPath: '/shipping-policy'
       preLoaderRoute: typeof ShippingPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -876,6 +916,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   AyurvedaRoute: AyurvedaRoute,
   BookRoute: BookRoute,
+  BookingRoute: BookingRoute,
   CartRoute: CartRoute,
   CategoriesRoute: CategoriesRoute,
   CheckoutRoute: CheckoutRoute,
@@ -887,6 +928,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsRoute: ProductsRoute,
   RefundPolicyRoute: RefundPolicyRoute,
   ShippingPolicyRoute: ShippingPolicyRoute,
+  ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   TestimonialsRoute: TestimonialsRoute,

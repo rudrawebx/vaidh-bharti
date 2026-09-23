@@ -2,9 +2,10 @@ import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Building2, Bell, Truck, Tag, Calendar, CreditCard, ShieldCheck, Lock } from "lucide-react";
+import { Building2, Bell, Truck, Tag, Calendar, CreditCard, ShieldCheck, Lock, Database, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { changeAdminPassword } from "@/lib/admin-auth.functions";
+import { checkHostingerDbConnection, initializeHostingerDbTables } from "@/lib/database.functions";
 
 export const Route = createFileRoute("/admin/settings")({ component: AdminSettings });
 
@@ -263,6 +264,42 @@ function AdminSettings() {
     }
   };
 
+  const [testingDb, setTestingDb] = React.useState(false);
+  const [initializingDb, setInitializingDb] = React.useState(false);
+
+  const handleTestDb = async () => {
+    setTestingDb(true);
+    try {
+      const res = await checkHostingerDbConnection();
+      if (res?.ok) {
+        toast.success(res.message);
+      } else {
+        toast.error(res?.message || "Could not connect to Hostinger database.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Database connection test failed.");
+    } finally {
+      setTestingDb(false);
+    }
+  };
+
+  const handleInitTables = async () => {
+    if (!window.confirm("Initialize or update all tables in Hostinger MySQL database?")) return;
+    setInitializingDb(true);
+    try {
+      const res = await initializeHostingerDbTables();
+      if (res?.success) {
+        toast.success(`Hostinger MySQL schema initialized! ${res.executed} tables created/verified.`);
+      } else {
+        toast.error(res?.error || "Failed to create tables.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to initialize tables.");
+    } finally {
+      setInitializingDb(false);
+    }
+  };
+
   const field = "mt-2 h-11 w-full rounded-sm border border-input bg-card px-3 text-sm focus:ring-1 focus:ring-primary";
   const label = "text-[11px] uppercase tracking-[0.16em] text-muted-foreground";
 
@@ -339,6 +376,58 @@ function AdminSettings() {
               Save Business Details
             </button>
           </form>
+
+          {/* Hostinger MySQL Database Status & Actions */}
+          <div className="space-y-4 rounded-sm border border-border bg-card p-6 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-border pb-3">
+              <Database className="h-4 w-4 text-gold" />
+              <h2 className="font-display text-xl">Hostinger MySQL Database</h2>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Production database configured with Hostinger MySQL credentials.
+            </p>
+
+            <div className="rounded-sm bg-muted/40 p-4 space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Database Name:</span>
+                <span className="font-mono font-bold text-foreground">u931854669_vaidbharti</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Database User:</span>
+                <span className="font-mono font-bold text-foreground">u931854669_vaidbharti</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Host:</span>
+                <span className="font-mono text-foreground">localhost (Port 3306)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Password Status:</span>
+                <span className="font-mono font-bold text-emerald-700">Configured (VaidhBharti@2026)</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 pt-1">
+              <button
+                type="button"
+                onClick={handleTestDb}
+                disabled={testingDb}
+                className="flex items-center gap-2 rounded-sm bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-primary-foreground hover:opacity-90 disabled:opacity-50"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${testingDb ? "animate-spin" : ""}`} />
+                {testingDb ? "Testing Connection..." : "Test Connection"}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleInitTables}
+                disabled={initializingDb}
+                className="flex items-center gap-2 rounded-sm border border-border px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-foreground hover:bg-muted disabled:opacity-50"
+              >
+                <Database className="h-3.5 w-3.5 text-gold" />
+                {initializingDb ? "Creating Tables..." : "Create / Sync Tables"}
+              </button>
+            </div>
+          </div>
 
           {/* Shipping Rates */}
           <form onSubmit={saveShipping} className="space-y-4 rounded-sm border border-border bg-card p-6 shadow-xs">

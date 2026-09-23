@@ -1,13 +1,10 @@
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { X } from "lucide-react";
+import { X, ZoomIn } from "lucide-react";
 import { Container } from "@/components/site/primitives";
 import { PageHero } from "@/components/site/PageHero";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { portraitUrl } from "@/lib/site";
-import herbs from "@/assets/herbs.jpg";
 import panchakarmaImg from "@/assets/panchakarma.jpg";
-import centreImg from "@/assets/centre.jpg";
 import nadiImg from "@/assets/nadi.jpg";
 import { cn } from "@/lib/utils";
 
@@ -21,21 +18,21 @@ const categories = [
 ] as const;
 
 const shots = [
-  { src: "/assets/real/vaidh-jitender-bharti.png", alt: "Vaidh Jitender Bharti, Founder & Owner of Panchsheel Aarogya Dhaam", cat: "Vaidh Jitender Bharti", tall: true },
-  { src: "/assets/real/clinic-cottage.jpeg", alt: "Traditional bamboo cottage therapy suites at Panchsheel Aarogya Dhaam", cat: "The Centre", tall: true },
-  { src: "/assets/real/clinic-lawn.jpeg", alt: "Lush botanical gardens and green healing lawns", cat: "The Centre", tall: false },
-  { src: "/assets/real/vaidh-meditation.png", alt: "Vaidh Jitender Bharti in morning meditation at the ashram", cat: "Vaidh Jitender Bharti", tall: true },
-  { src: "/assets/real/dispensary-patients.jpeg", alt: "Ayurvedic consultation and dispensary at Panchsheel Aarogya Dhaam", cat: "Ayurvedic Therapies", tall: false },
-  { src: "/assets/real/herbal-spices.jpg", alt: "Authentic whole Ayurvedic herbs, roots and raw spices", cat: "Herbs & Formulations", tall: false },
-  { src: "/assets/real/stage-assembly.jpeg", alt: "Community health assembly and Ayurvedic guidance by Vaidh Jitender Bharti", cat: "Vaidh Jitender Bharti", tall: false },
-  { src: "/assets/real/cinnamon-mortar.jpg", alt: "Traditional stone pestle and mortar processing classical churnas", cat: "Herbs & Formulations", tall: true },
-  { src: "/assets/real/clinic-gardener.jpeg", alt: "Nurturing medicinal plants at the herbal garden", cat: "The Centre", tall: false },
-  { src: "/assets/real/herbal-tea-ceremony.jpg", alt: "Traditional preparation of restorative Ayurvedic herbal teas and kwath", cat: "Herbs & Formulations", tall: false },
-  { src: "/assets/real/vaidh-portrait-ashram.jpeg", alt: "Vaidh Jitender Bharti in consultation at the ashram", cat: "Vaidh Jitender Bharti", tall: false },
-  { src: "/assets/real/stage-ceremony.jpeg", alt: "Health seminar and felicitation ceremony at the centre", cat: "The Centre", tall: true },
-  { src: "/assets/real/stage-gathering.jpeg", alt: "Patients and wellness seekers gathered at Panchsheel Aarogya Dhaam", cat: "The Centre", tall: false },
-  { src: panchakarmaImg, alt: "Classical Panchakarma therapy setup with brass vessels", cat: "Panchakarma", tall: false },
-  { src: nadiImg, alt: "Classical Nadi Pariksha pulse assessment", cat: "Ayurvedic Therapies", tall: false },
+  { src: "/assets/real/vaidh-jitender-bharti.png", alt: "Vaidh Jitender Bharti, Founder & Owner of Panchsheel Aarogya Dhaam", cat: "Vaidh Jitender Bharti" },
+  { src: "/assets/real/clinic-cottage.jpeg", alt: "Traditional bamboo cottage therapy suites at Panchsheel Aarogya Dhaam", cat: "The Centre" },
+  { src: "/assets/real/clinic-lawn.jpeg", alt: "Lush botanical gardens and green healing lawns", cat: "The Centre" },
+  { src: "/assets/real/vaidh-meditation.png", alt: "Vaidh Jitender Bharti in morning meditation at the ashram", cat: "Vaidh Jitender Bharti" },
+  { src: "/assets/real/dispensary-patients.jpeg", alt: "Ayurvedic consultation and dispensary at Panchsheel Aarogya Dhaam", cat: "Ayurvedic Therapies" },
+  { src: "/assets/real/herbal-spices.jpg", alt: "Authentic whole Ayurvedic herbs, roots and raw spices", cat: "Herbs & Formulations" },
+  { src: "/assets/real/stage-assembly.jpeg", alt: "Community health assembly and Ayurvedic guidance by Vaidh Jitender Bharti", cat: "Vaidh Jitender Bharti" },
+  { src: "/assets/real/cinnamon-mortar.jpg", alt: "Traditional stone pestle and mortar processing classical churnas", cat: "Herbs & Formulations" },
+  { src: "/assets/real/clinic-gardener.jpeg", alt: "Nurturing medicinal plants at the herbal garden", cat: "The Centre" },
+  { src: "/assets/real/herbal-tea-ceremony.jpg", alt: "Traditional preparation of restorative Ayurvedic herbal teas and kwath", cat: "Herbs & Formulations" },
+  { src: "/assets/real/vaidh-portrait-ashram.jpeg", alt: "Vaidh Jitender Bharti in consultation at the ashram", cat: "Vaidh Jitender Bharti" },
+  { src: "/assets/real/stage-ceremony.jpeg", alt: "Health seminar and felicitation ceremony at the centre", cat: "The Centre" },
+  { src: "/assets/real/stage-gathering.jpeg", alt: "Patients and wellness seekers gathered at Panchsheel Aarogya Dhaam", cat: "The Centre" },
+  { src: panchakarmaImg, alt: "Classical Panchakarma therapy setup with brass vessels", cat: "Panchakarma" },
+  { src: nadiImg, alt: "Classical Nadi Pariksha pulse assessment", cat: "Ayurvedic Therapies" },
 ];
 
 export const Route = createFileRoute("/gallery")({
@@ -93,38 +90,71 @@ function Gallery() {
             ))}
           </ul>
 
-          <div className="mt-10 grid auto-rows-[200px] grid-cols-2 gap-4 lg:grid-cols-3">
+          {/* Uncropped Responsive Masonry Gallery */}
+          <div className="mt-10 columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
             {visible.map((s, i) => (
-              <button
-                key={`${s.alt}-${i}`}
-                type="button"
-                onClick={() => setActive(s)}
-                className={cn("group overflow-hidden rounded-sm", s.tall && "row-span-2")}
-                aria-label={`Open image: ${s.alt}`}
-              >
-                <img
-                  src={s.src}
-                  alt={s.alt}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
-                />
-              </button>
+              <div key={`${s.alt}-${i}`} className="break-inside-avoid">
+                <button
+                  type="button"
+                  onClick={() => setActive(s)}
+                  className="group block w-full overflow-hidden rounded-md border border-border/80 bg-card p-2.5 text-left shadow-sm transition-all duration-300 hover:border-gold hover:shadow-md"
+                  aria-label={`Open full image: ${s.alt}`}
+                >
+                  <div className="relative overflow-hidden rounded bg-[#FAF7F2] flex items-center justify-center">
+                    <img
+                      src={s.src}
+                      alt={s.alt}
+                      loading="lazy"
+                      className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+                    />
+                    <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20 flex items-center justify-center">
+                      <span className="opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-full bg-background/90 p-2.5 text-foreground shadow-lg">
+                        <ZoomIn className="h-5 w-5 text-gold" />
+                      </span>
+                    </div>
+                  </div>
+                  <div className="px-2 pt-3 pb-1">
+                    <span className="inline-block text-[10px] font-semibold uppercase tracking-[0.16em] text-gold">
+                      {s.cat}
+                    </span>
+                    <p className="mt-1 text-xs font-medium leading-snug text-foreground/90">
+                      {s.alt}
+                    </p>
+                  </div>
+                </button>
+              </div>
             ))}
           </div>
         </Container>
       </section>
 
       <Dialog open={!!active} onOpenChange={(o) => !o && setActive(null)}>
-        <DialogContent className="max-w-4xl border-none bg-transparent p-0 shadow-none">
+        <DialogContent className="max-w-5xl border-none bg-black/95 p-4 sm:p-6 shadow-2xl backdrop-blur-md rounded-lg">
           <DialogTitle className="sr-only">{active?.alt ?? "Image"}</DialogTitle>
-          {active ? <img src={active.src} alt={active.alt} className="w-full rounded-sm object-contain" /> : null}
+          {active ? (
+            <div className="flex flex-col items-center">
+              <div className="relative flex max-h-[82vh] w-full items-center justify-center">
+                <img
+                  src={active.src}
+                  alt={active.alt}
+                  className="max-h-[82vh] max-w-full rounded object-contain shadow-2xl"
+                />
+              </div>
+              <div className="mt-3 w-full text-center">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-gold">
+                  {active.cat}
+                </span>
+                <p className="mt-0.5 text-sm text-white/90">{active.alt}</p>
+              </div>
+            </div>
+          ) : null}
           <button
             type="button"
             onClick={() => setActive(null)}
             aria-label="Close image"
-            className="absolute -top-12 right-0 grid h-10 w-10 place-items-center rounded-full bg-background text-foreground"
+            className="absolute top-4 right-4 grid h-10 w-10 place-items-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         </DialogContent>
       </Dialog>

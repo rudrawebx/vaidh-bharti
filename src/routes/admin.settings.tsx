@@ -2,8 +2,9 @@ import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Building2, Bell, Truck, Tag, Calendar, CreditCard, ShieldCheck } from "lucide-react";
+import { Building2, Bell, Truck, Tag, Calendar, CreditCard, ShieldCheck, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { changeAdminPassword } from "@/lib/admin-auth.functions";
 
 export const Route = createFileRoute("/admin/settings")({ component: AdminSettings });
 
@@ -232,6 +233,36 @@ function AdminSettings() {
     void coupons.refetch();
   };
 
+  const [currPass, setCurrPass] = React.useState("");
+  const [newPass, setNewPass] = React.useState("");
+  const [updatingPass, setUpdatingPass] = React.useState(false);
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = typeof window !== "undefined" ? localStorage.getItem("vb_admin_token") || "" : "";
+    if (!token) {
+      toast.error("Please sign in with administrator credentials first.");
+      return;
+    }
+    setUpdatingPass(true);
+    try {
+      const res = await changeAdminPassword({
+        data: {
+          token,
+          currentPassword: currPass,
+          newPassword: newPass,
+        },
+      });
+      toast.success(res.message || "Password updated successfully!");
+      setCurrPass("");
+      setNewPass("");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update password.");
+    } finally {
+      setUpdatingPass(false);
+    }
+  };
+
   const field = "mt-2 h-11 w-full rounded-sm border border-input bg-card px-3 text-sm focus:ring-1 focus:ring-primary";
   const label = "text-[11px] uppercase tracking-[0.16em] text-muted-foreground";
 
@@ -332,6 +363,52 @@ function AdminSettings() {
             </div>
             <button type="submit" className="rounded-sm bg-primary px-6 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground hover:opacity-90">
               Save Delivery Charges
+            </button>
+          </form>
+
+          {/* Admin Password Change */}
+          <form onSubmit={handlePasswordChange} className="space-y-4 rounded-sm border border-border bg-card p-6 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-border pb-3">
+              <Lock className="h-4 w-4 text-gold" />
+              <h2 className="font-display text-xl">Admin Security &amp; Password</h2>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Update the master administrator login password for Vaidh Bharti.
+            </p>
+
+            <div>
+              <label className={label} htmlFor="cur-pass">Current Password</label>
+              <input
+                id="cur-pass"
+                type="password"
+                required
+                className={field}
+                value={currPass}
+                onChange={(e) => setCurrPass(e.target.value)}
+                placeholder="Enter current password"
+              />
+            </div>
+
+            <div>
+              <label className={label} htmlFor="new-pass">New Password</label>
+              <input
+                id="new-pass"
+                type="password"
+                required
+                minLength={6}
+                className={field}
+                value={newPass}
+                onChange={(e) => setNewPass(e.target.value)}
+                placeholder="Enter new password (min 6 characters)"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={updatingPass}
+              className="rounded-sm bg-primary px-6 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground hover:opacity-90 disabled:opacity-60"
+            >
+              {updatingPass ? "Updating Password..." : "Update Admin Password"}
             </button>
           </form>
         </div>

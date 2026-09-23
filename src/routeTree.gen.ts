@@ -51,6 +51,7 @@ import { Route as TreatmentsIndexRouteImport } from './routes/treatments.index'
 import { Route as TreatmentsAyurvedicConsultationRouteImport } from './routes/treatments.ayurvedic-consultation'
 import { Route as TreatmentsNadiParikshaRouteImport } from './routes/treatments.nadi-pariksha'
 import { Route as TreatmentsPanchakarmaRouteImport } from './routes/treatments.panchakarma'
+import { Route as ApiWebhooksRazorpayRouteImport } from './routes/api.webhooks.razorpay'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -262,6 +263,11 @@ const TreatmentsPanchakarmaRoute = TreatmentsPanchakarmaRouteImport.update({
   path: '/panchakarma',
   getParentRoute: () => TreatmentsRoute,
 } as any)
+const ApiWebhooksRazorpayRoute = ApiWebhooksRazorpayRouteImport.update({
+  id: '/api/webhooks/razorpay',
+  path: '/api/webhooks/razorpay',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -305,6 +311,7 @@ export interface FileRoutesByFullPath {
   '/treatments/panchakarma': typeof TreatmentsPanchakarmaRoute
   '/admin/': typeof AdminIndexRoute
   '/treatments/': typeof TreatmentsIndexRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -346,6 +353,7 @@ export interface FileRoutesByTo {
   '/treatments/panchakarma': typeof TreatmentsPanchakarmaRoute
   '/admin': typeof AdminIndexRoute
   '/treatments': typeof TreatmentsIndexRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -391,6 +399,7 @@ export interface FileRoutesById {
   '/treatments/panchakarma': typeof TreatmentsPanchakarmaRoute
   '/admin/': typeof AdminIndexRoute
   '/treatments/': typeof TreatmentsIndexRoute
+  '/api/webhooks/razorpay': typeof ApiWebhooksRazorpayRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -436,6 +445,7 @@ export interface FileRouteTypes {
     | '/treatments/panchakarma'
     | '/admin/'
     | '/treatments/'
+    | '/api/webhooks/razorpay'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -477,6 +487,7 @@ export interface FileRouteTypes {
     | '/treatments/panchakarma'
     | '/admin'
     | '/treatments'
+    | '/api/webhooks/razorpay'
   id:
     | '__root__'
     | '/'
@@ -521,6 +532,7 @@ export interface FileRouteTypes {
     | '/treatments/panchakarma'
     | '/admin/'
     | '/treatments/'
+    | '/api/webhooks/razorpay'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -552,6 +564,7 @@ export interface RootRouteChildren {
   CategorySlugRoute: typeof CategorySlugRoute
   OrderNumberRoute: typeof OrderNumberRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  ApiWebhooksRazorpayRoute: typeof ApiWebhooksRazorpayRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -850,6 +863,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TreatmentsPanchakarmaRouteImport
       parentRoute: typeof TreatmentsRoute
     }
+    '/api/webhooks/razorpay': {
+      id: '/api/webhooks/razorpay'
+      path: '/api/webhooks/razorpay'
+      fullPath: '/api/webhooks/razorpay'
+      preLoaderRoute: typeof ApiWebhooksRazorpayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -937,6 +957,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategorySlugRoute: CategorySlugRoute,
   OrderNumberRoute: OrderNumberRoute,
   ProductSlugRoute: ProductSlugRoute,
+  ApiWebhooksRazorpayRoute: ApiWebhooksRazorpayRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

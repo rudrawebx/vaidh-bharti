@@ -2,9 +2,10 @@ import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Trash2, Upload, X } from "lucide-react";
+import { Trash2, Upload, X, Database } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { inr } from "@/lib/site";
+import { seedCatalogToDatabase } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/admin/products")({ component: AdminProducts });
 
@@ -482,14 +483,40 @@ function AdminProducts() {
 
       <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-2xl">All products</h2>
-          <input
-            aria-label="Search products"
-            placeholder="Search by name or SKU"
-            className="h-11 w-56 rounded-sm border border-input bg-card px-3 text-sm"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <div>
+            <h2 className="font-display text-2xl">All products</h2>
+            <p className="text-xs text-muted-foreground">Showing {list.length} products in catalog</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              disabled={saving}
+              onClick={async () => {
+                if (!window.confirm("Seed / Sync all 18 authentic Ayurvedic products from packaging into Supabase?")) return;
+                try {
+                  toast.loading("Syncing master catalog to database...");
+                  const res = await seedCatalogToDatabase();
+                  toast.dismiss();
+                  toast.success(`Catalog synced! ${res.seededCount} products updated in database.`);
+                  void products.refetch();
+                } catch (err: any) {
+                  toast.dismiss();
+                  toast.error(err.message || "Failed to sync catalog.");
+                }
+              }}
+              className="flex items-center gap-1.5 rounded-sm border border-border bg-card px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] hover:bg-muted"
+            >
+              <Database className="h-3.5 w-3.5 text-gold" />
+              Sync 18 Master SKUs
+            </button>
+            <input
+              aria-label="Search products"
+              placeholder="Search by name, slug or SKU"
+              className="h-10 w-52 rounded-sm border border-input bg-card px-3 text-xs"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </div>
         <ul className="mt-4 divide-y divide-border border border-border">
           {list.length ? (
@@ -502,16 +529,54 @@ function AdminProducts() {
                     <div className="h-12 w-12 rounded-sm border border-dashed border-border" />
                   )}
                   <div>
-                    <p className="font-display text-lg">{p.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {p.price ? inr(Number(p.price)) : "Price on request"} · {p.stock} in stock ·{" "}
+                    <div className="flex items-center gap-2">
+                      <p className="font-display text-base font-semibold">{p.name}</p>
+                      {p.sku && (
+                        <span className="rounded-sm bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+                          {p.sku}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {p.price ? inr(Number(p.price)) : "Price on request"}
+                      {p.mrp ? ` (MRP ${inr(Number(p.mrp))})` : ""} · {p.stock} in stock ·{" "}
                       {p.is_active ? "visible" : "hidden"}
+                      {p.net_quantity ? ` · ${p.net_quantity}` : ""}
                       {p.product_variants?.length ? ` · ${p.product_variants.length} pack sizes` : ""}
                     </p>
-                    {p.stock <= 3 ? <p className="text-xs font-semibold text-destructive">Low stock</p> : null}
+                    {p.stock <= 3 ? <p className="text-xs font-semibold text-destructive mt-0.5">Low stock alert</p> : null}
                   </div>
                 </div>
-                <div className="flex gap-3 text-[11px] uppercase tracking-[0.14em]">
+                <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.14em]">
+                  <div className="flex items-center gap-1 border border-border rounded-sm px-2 py-1 text-xs">
+                    <span className="text-[10px] text-muted-foreground mr-1">Qty:</span>
+                    <button
+                      type="button"
+                      disabled={p.stock <= 0}
+                      className="px-1.5 py-0.5 bg-muted rounded-xs hover:bg-muted/80 disabled:opacity-30"
+                      onClick={async () => {
+                        const next = Math.max(0, (p.stock || 0) - 1);
+                        await supabase.from("products").update({ stock: next }).eq("id", p.id);
+                        void products.refetch();
+                      }}
+                      title="Decrease stock by 1"
+                    >
+                      -1
+                    </button>
+                    <span className="font-mono px-1 font-semibold">{p.stock}</span>
+                    <button
+                      type="button"
+                      className="px-1.5 py-0.5 bg-muted rounded-xs hover:bg-muted/80"
+                      onClick={async () => {
+                        const next = (p.stock || 0) + 10;
+                        await supabase.from("products").update({ stock: next }).eq("id", p.id);
+                        void products.refetch();
+                      }}
+                      title="Add 10 units"
+                    >
+                      +10
+                    </button>
+                  </div>
                   <button type="button" className="text-gold" onClick={() => void editProduct(p)}>Edit</button>
                   <button
                     type="button"

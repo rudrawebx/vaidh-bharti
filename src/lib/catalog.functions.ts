@@ -47,7 +47,7 @@ export type ProductDTO = {
 };
 
 const PRODUCT_COLS =
-  "id, slug, name, short_description, description, benefits, ingredients, usage_instructions, images, price, mrp, stock, net_quantity, is_featured, is_best_seller, is_new_arrival, subscription_available, subscription_discount_pct, sort_order, categories(slug,name), product_variants(id,label,price,mrp,stock,sort_order)";
+  "id, slug, name, short_description, description, benefits, ingredients, usage_instructions, images, price, mrp, stock, sku, net_quantity, is_featured, is_best_seller, is_new_arrival, subscription_available, subscription_discount_pct, sort_order, seo_title, seo_description, categories(id,slug,name), product_variants(id,label,price,mrp,stock,sort_order)";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function toProduct(row: any): ProductDTO {
@@ -55,6 +55,9 @@ function toProduct(row: any): ProductDTO {
     id: row.id,
     slug: row.slug,
     name: row.name,
+    sku: row.sku ?? undefined,
+    seo_title: row.seo_title ?? undefined,
+    meta_description: row.seo_description ?? undefined,
     short_description: row.short_description,
     description: row.description,
     benefits: row.benefits ?? [],
@@ -801,18 +804,33 @@ export const listCatalog = createServerFn({ method: "GET" }).handler(async () =>
   try {
     const { publicClient } = await import("./supabase-public.server");
     const supabase = publicClient();
-    const { data: reviewRows } = await supabase
-      .from("reviews")
-      .select("product_id,rating")
-      .eq("status", "approved");
 
+    const [catRes, prodRes, reviewRowsRes] = await Promise.all([
+      supabase.from("categories").select("id,slug,name,description,image_url").eq("is_active", true).order("sort_order"),
+      supabase.from("products").select(PRODUCT_COLS).eq("is_active", true).order("sort_order"),
+      supabase.from("reviews").select("product_id,rating").eq("status", "approved"),
+    ]);
+
+    const dbProducts = (prodRes.data ?? []).map(toProduct);
+    const dbCategories: CategoryDTO[] = (catRes.data ?? []).map((c: any) => ({
+      id: c.id,
+      slug: c.slug,
+      name: c.name,
+      description: c.description,
+      image_url: c.image_url,
+    }));
+
+    const activeProducts = dbProducts.length > 0 ? dbProducts : fallbackProducts;
+    const activeCategories = dbCategories.length > 0 ? dbCategories : fallbackCategories;
+
+    const reviewRows = reviewRowsRes.data ?? [];
     const productsWithRatings =
       reviewRows && reviewRows.length > 0
-        ? withRatings(fallbackProducts, reviewRows as { product_id: string; rating: number }[])
-        : fallbackProducts;
+        ? withRatings(activeProducts, reviewRows as { product_id: string; rating: number }[])
+        : activeProducts;
 
     return {
-      categories: fallbackCategories,
+      categories: activeCategories,
       products: productsWithRatings,
     };
   } catch (err) {
@@ -838,11 +856,44 @@ export const getProductBySlug = createServerFn({ method: "GET" })
       "vata-tea": "vatt-tea",
     };
     const targetSlug = slugAliases[data.slug] ?? data.slug;
-    const all = getFallbackProducts();
-    const product = all.find((p) => p.slug === targetSlug);
-    if (!product) return null;
+    const allFallback = getFallbackProducts();
+    let product: ProductDTO | null = null;
+    let related: ProductDTO[] = [];
 
-    const related = all.filter((p) => p.slug !== product.slug).slice(0, 4);
+    try {
+      const { publicClient } = await import("./supabase-public.server");
+      const supabase = publicClient();
+
+      const { data: dbProductRow } = await supabase
+        .from("products")
+        .select(PRODUCT_COLS)
+        .eq("slug", targetSlug)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (dbProductRow) {
+        product = toProduct(dbProductRow);
+        const { data: relatedRows } = await supabase
+          .from("products")
+          .select(PRODUCT_COLS)
+          .neq("slug", targetSlug)
+          .eq("is_active", true)
+          .limit(4);
+        if (relatedRows && relatedRows.length > 0) {
+          related = relatedRows.map(toProduct);
+        }
+      }
+    } catch (err) {
+      console.warn("Could not query product from DB:", err);
+    }
+
+    if (!product) {
+      product = allFallback.find((p) => p.slug === targetSlug) ?? null;
+      if (!product) return null;
+      if (related.length === 0) {
+        related = allFallback.filter((p) => p.slug !== product!.slug).slice(0, 4);
+      }
+    }
 
     try {
       const { publicClient } = await import("./supabase-public.server");
@@ -861,15 +912,8 @@ export const getProductBySlug = createServerFn({ method: "GET" })
           .eq("is_published", true)
           .order("sort_order"),
       ]);
-      const dbReviews = (reviewsRes.data ?? []) as {
-        id: string;
-        author_name: string;
-        rating: number;
-        title: string | null;
-        body: string | null;
-        created_at: string;
-      }[];
-      const dbFaqs = (faqRes.data ?? []) as { id: string; question: string; answer: string }[];
+      const dbReviews = (reviewsRes.data ?? []) as any[];
+      const dbFaqs = (faqRes.data ?? []) as any[];
 
       const reviews = dbReviews.length
         ? dbReviews
@@ -923,43 +967,137 @@ export const getProductBySlug = createServerFn({ method: "GET" })
         faqs,
       };
     } catch (err) {
-      console.warn("getProductBySlug failed from DB, using fallback:", err);
       return {
         product,
-        reviews: [
-          {
-            id: "rev-1",
-            author_name: "Rajesh Sharma",
-            rating: 5,
-            title: "Authentic & Effective",
-            body: "Genuine Ayurvedic preparation. Felt the difference in just 2 weeks.",
-            created_at: new Date().toISOString(),
-          },
-          {
-            id: "rev-2",
-            author_name: "Anita Verma",
-            rating: 5,
-            title: "Pure Ayurvedic quality",
-            body: "Very satisfied with the quality and traditional method of preparation.",
-            created_at: new Date().toISOString(),
-          },
-        ],
+        reviews: [],
         related,
-        faqs: [
-          {
-            id: "faq-1",
-            question: "How should I use this preparation?",
-            answer: product.usage_instructions || "Use as directed on the packaging or consult Vaidh Bharti.",
-          },
-          {
-            id: "faq-2",
-            question: "Is this 100% natural and Ayurvedic?",
-            answer:
-              "Yes, all our formulations are prepared strictly adhering to classical Ayurvedic references without harsh synthetic additives.",
-          },
-        ],
+        faqs: [],
       };
     }
+  });
+
+export const seedCatalogToDatabase = createServerFn({ method: "POST" })
+  .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const categories = getFallbackCategories();
+    const products = getFallbackProducts();
+
+    const categoryMap = new Map<string, string>();
+    for (const c of categories) {
+      const { data: existing } = await supabaseAdmin
+        .from("categories")
+        .select("id")
+        .eq("slug", c.slug)
+        .maybeSingle();
+
+      if (existing) {
+        categoryMap.set(c.slug, existing.id);
+      } else {
+        const { data: inserted } = await supabaseAdmin
+          .from("categories")
+          .insert({
+            slug: c.slug,
+            name: c.name,
+            description: c.description,
+            image_url: c.image_url,
+            is_active: true,
+          })
+          .select("id")
+          .single();
+        if (inserted) categoryMap.set(c.slug, inserted.id);
+      }
+    }
+
+    let seededCount = 0;
+    for (const p of products) {
+      const catId = p.category ? categoryMap.get(p.category.slug) ?? null : null;
+      const { data: existing } = await supabaseAdmin
+        .from("products")
+        .select("id")
+        .eq("slug", p.slug)
+        .maybeSingle();
+
+      let prodId: string;
+      if (existing) {
+        prodId = existing.id;
+        await supabaseAdmin
+          .from("products")
+          .update({
+            name: p.name,
+            sku: p.sku ?? null,
+            short_description: p.short_description,
+            description: p.description,
+            benefits: p.benefits,
+            ingredients: p.ingredients,
+            usage_instructions: p.usage_instructions,
+            images: p.images,
+            price: p.price,
+            mrp: p.mrp,
+            stock: p.stock,
+            net_quantity: p.net_quantity,
+            is_featured: p.is_featured,
+            is_best_seller: p.is_best_seller,
+            is_new_arrival: p.is_new_arrival,
+            category_id: catId,
+            seo_title: p.seo_title ?? null,
+            seo_description: p.meta_description ?? null,
+            is_active: true,
+          })
+          .eq("id", prodId);
+      } else {
+        const { data: inserted } = await supabaseAdmin
+          .from("products")
+          .insert({
+            slug: p.slug,
+            name: p.name,
+            sku: p.sku ?? null,
+            short_description: p.short_description,
+            description: p.description,
+            benefits: p.benefits,
+            ingredients: p.ingredients,
+            usage_instructions: p.usage_instructions,
+            images: p.images,
+            price: p.price,
+            mrp: p.mrp,
+            stock: p.stock,
+            net_quantity: p.net_quantity,
+            is_featured: p.is_featured,
+            is_best_seller: p.is_best_seller,
+            is_new_arrival: p.is_new_arrival,
+            category_id: catId,
+            seo_title: p.seo_title ?? null,
+            seo_description: p.meta_description ?? null,
+            is_active: true,
+          })
+          .select("id")
+          .single();
+        if (inserted) prodId = inserted.id;
+        else continue;
+      }
+
+      // Upsert variants
+      for (const v of p.variants) {
+        const { data: existVar } = await supabaseAdmin
+          .from("product_variants")
+          .select("id")
+          .eq("product_id", prodId)
+          .eq("label", v.label)
+          .maybeSingle();
+
+        if (!existVar) {
+          await supabaseAdmin.from("product_variants").insert({
+            product_id: prodId,
+            label: v.label,
+            price: v.price,
+            mrp: v.mrp,
+            stock: v.stock,
+          });
+        }
+      }
+      seededCount++;
+    }
+
+    return { success: true, count: seededCount };
   });
 
 export const getSiteContent = createServerFn({ method: "GET" }).handler(async () => {

@@ -375,6 +375,13 @@ export type Database = {
           tracking_number: string | null
           updated_at: string
           user_id: string | null
+          invoice_number: string | null
+          invoice_date: string | null
+          tax_amount: number | null
+          payment_gateway_payload: Json | null
+          audit_log: Json | null
+          cancelled_reason: string | null
+          refund_reference: string | null
         }
         Insert: {
           address_line1: string
@@ -403,6 +410,13 @@ export type Database = {
           tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
+          invoice_number?: string | null
+          invoice_date?: string | null
+          tax_amount?: number | null
+          payment_gateway_payload?: Json | null
+          audit_log?: Json | null
+          cancelled_reason?: string | null
+          refund_reference?: string | null
         }
         Update: {
           address_line1?: string
@@ -431,6 +445,52 @@ export type Database = {
           tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
+          invoice_number?: string | null
+          invoice_date?: string | null
+          tax_amount?: number | null
+          payment_gateway_payload?: Json | null
+          audit_log?: Json | null
+          cancelled_reason?: string | null
+          refund_reference?: string | null
+        }
+        Relationships: []
+      }
+      notification_logs: {
+        Row: {
+          id: string
+          order_id: string | null
+          order_number: string | null
+          channel: string
+          recipient: string
+          subject: string | null
+          status: string
+          error_message: string | null
+          payload: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          order_id?: string | null
+          order_number?: string | null
+          channel: string
+          recipient: string
+          subject?: string | null
+          status?: string
+          error_message?: string | null
+          payload?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          order_id?: string | null
+          order_number?: string | null
+          channel?: string
+          recipient?: string
+          subject?: string | null
+          status?: string
+          error_message?: string | null
+          payload?: Json | null
+          created_at?: string
         }
         Relationships: []
       }

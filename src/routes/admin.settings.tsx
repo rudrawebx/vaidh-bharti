@@ -2,6 +2,7 @@ import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Building2, Bell, Truck, Tag, Calendar, CreditCard, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin/settings")({ component: AdminSettings });
@@ -9,14 +10,95 @@ export const Route = createFileRoute("/admin/settings")({ component: AdminSettin
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 function AdminSettings() {
+  // 1. Business & Clinic Details
+  const businessQuery = useQuery({
+    queryKey: ["admin-business-settings"],
+    queryFn: async () => (await supabase.from("site_settings").select("value").eq("key", "business_details").maybeSingle()).data,
+  });
+
+  const [legalName, setLegalName] = React.useState("Vaidh Bharti - Panchsheel Aarogya Dhaam");
+  const [ownerName, setOwnerName] = React.useState("Vaidh Jitender Bharti");
+  const [address, setAddress] = React.useState("Barwala Road, Near Shree Ram ITI, Hansi, Haryana 125033");
+  const [bizPhone, setBizPhone] = React.useState("+91 99964 15501");
+  const [bizEmail, setBizEmail] = React.useState("vaidbharti80@gmail.com");
+  const [gstin, setGstin] = React.useState("");
+
+  React.useEffect(() => {
+    const v = businessQuery.data?.value as any;
+    if (!v) return;
+    if (v.legal_name) setLegalName(v.legal_name);
+    if (v.owner_name) setOwnerName(v.owner_name);
+    if (v.address) setAddress(v.address);
+    if (v.phone) setBizPhone(v.phone);
+    if (v.email) setBizEmail(v.email);
+    if (v.gstin !== undefined) setGstin(v.gstin || "");
+  }, [businessQuery.data]);
+
+  const saveBusinessDetails = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await supabase.from("site_settings").upsert(
+      {
+        key: "business_details",
+        value: {
+          legal_name: legalName.trim(),
+          owner_name: ownerName.trim(),
+          address: address.trim(),
+          phone: bizPhone.trim(),
+          email: bizEmail.trim(),
+          gstin: gstin.trim() || null,
+        },
+      },
+      { onConflict: "key" },
+    );
+    if (error) toast.error("Could not save clinic & business details.");
+    else toast.success("Business details updated successfully.");
+    void businessQuery.refetch();
+  };
+
+  // 2. Notification & Payment Settings
+  const notifQuery = useQuery({
+    queryKey: ["admin-notification-settings"],
+    queryFn: async () => (await supabase.from("site_settings").select("value").eq("key", "notification_settings").maybeSingle()).data,
+  });
+
+  const [adminEmails, setAdminEmails] = React.useState("info@vaidhbharti.com");
+  const [whatsappPhone, setWhatsappPhone] = React.useState("+91 99960 99946");
+  const [codEnabled, setCodEnabled] = React.useState(true);
+  const [onlineEnabled, setOnlineEnabled] = React.useState(true);
+
+  React.useEffect(() => {
+    const v = notifQuery.data?.value as any;
+    if (!v) return;
+    if (v.admin_emails) setAdminEmails(Array.isArray(v.admin_emails) ? v.admin_emails.join(", ") : v.admin_emails);
+    if (v.whatsapp_phone) setWhatsappPhone(v.whatsapp_phone);
+    if (v.cod_enabled !== undefined) setCodEnabled(Boolean(v.cod_enabled));
+    if (v.online_enabled !== undefined) setOnlineEnabled(Boolean(v.online_enabled));
+  }, [notifQuery.data]);
+
+  const saveNotificationSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const emailsList = adminEmails.split(",").map((x) => x.trim()).filter(Boolean);
+    const { error } = await supabase.from("site_settings").upsert(
+      {
+        key: "notification_settings",
+        value: {
+          admin_emails: emailsList,
+          whatsapp_phone: whatsappPhone.trim(),
+          cod_enabled: codEnabled,
+          online_enabled: onlineEnabled,
+        },
+      },
+      { onConflict: "key" },
+    );
+    if (error) toast.error("Could not save notification & payment settings.");
+    else toast.success("Settings saved successfully.");
+    void notifQuery.refetch();
+  };
+
+  // 3. Consultation Schedule Settings
   const settings = useQuery({
     queryKey: ["admin-booking-settings"],
     queryFn: async () => (await supabase.from("booking_settings").select("*").maybeSingle()).data,
-  });
-
-  const coupons = useQuery({
-    queryKey: ["admin-coupons"],
-    queryFn: async () => (await supabase.from("coupons").select("*").order("code")).data ?? [],
   });
 
   const [start, setStart] = React.useState("09:00");
@@ -37,7 +119,7 @@ function AdminSettings() {
     setBlocked(s.blocked_dates.join(", "));
   }, [settings.data]);
 
-  const saveSettings = async (e: React.FormEvent) => {
+  const saveSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
     const { error } = await supabase
       .from("booking_settings")
@@ -55,6 +137,7 @@ function AdminSettings() {
     void settings.refetch();
   };
 
+  // 4. Shipping Delivery Charges
   const shipping = useQuery({
     queryKey: ["admin-shipping"],
     queryFn: async () => (await supabase.from("site_settings").select("value").eq("key", "shipping").maybeSingle()).data,
@@ -90,6 +173,7 @@ function AdminSettings() {
     void shipping.refetch();
   };
 
+  // 5. Consultation Fee
   const consult = useQuery({
     queryKey: ["admin-consultation-fee"],
     queryFn: async () => (await supabase.from("site_settings").select("value").eq("key", "consultation").maybeSingle()).data,
@@ -111,12 +195,16 @@ function AdminSettings() {
       { key: "consultation", value: { fee: Number(fee) || 0, gst_percent: Number(gstPercent) || 0 } },
       { onConflict: "key" },
     );
-    if (error) toast.error("Could not save the consultation fee.");
+    if (error) toast.error("Could not save consultation fee.");
     else toast.success("Consultation fee saved.");
     void consult.refetch();
   };
 
-  const feeTotal = Math.round(Number(fee) || 0) + Math.round(((Number(fee) || 0) * (Number(gstPercent) || 0)) / 100);
+  // 6. Coupons
+  const coupons = useQuery({
+    queryKey: ["admin-coupons"],
+    queryFn: async () => (await supabase.from("coupons").select("*").order("code")).data ?? [],
+  });
 
   const [code, setCode] = React.useState("");
   const [type, setType] = React.useState("percent");
@@ -144,147 +232,255 @@ function AdminSettings() {
     void coupons.refetch();
   };
 
-  const field = "mt-2 h-12 w-full rounded-sm border border-input bg-card px-3 text-sm";
+  const field = "mt-2 h-11 w-full rounded-sm border border-input bg-card px-3 text-sm focus:ring-1 focus:ring-primary";
   const label = "text-[11px] uppercase tracking-[0.16em] text-muted-foreground";
 
   return (
-    <div className="grid gap-10 lg:grid-cols-2">
-      <form onSubmit={saveSettings} className="space-y-4 border border-border p-6">
-        <h2 className="font-display text-2xl">Consultation schedule</h2>
-        <div className="grid grid-cols-3 gap-3">
-          <div>
-            <label className={label} htmlFor="s-start">Opens</label>
-            <input id="s-start" type="time" className={field} value={start} onChange={(e) => setStart(e.target.value)} />
-          </div>
-          <div>
-            <label className={label} htmlFor="s-end">Closes</label>
-            <input id="s-end" type="time" className={field} value={end} onChange={(e) => setEnd(e.target.value)} />
-          </div>
-          <div>
-            <label className={label} htmlFor="s-slot">Slot (min)</label>
-            <input id="s-slot" type="number" min="10" step="5" className={field} value={slot} onChange={(e) => setSlot(e.target.value)} />
-          </div>
+    <div className="space-y-8">
+      <div>
+        <h1 className="font-display text-2xl">Store &amp; Clinic Settings</h1>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Manage business credentials, GST invoices, automated notification dispatch, delivery rates, and consultation fees.
+        </p>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Left Column: Business Credentials & Shipping */}
+        <div className="space-y-8">
+          {/* Business Details */}
+          <form onSubmit={saveBusinessDetails} className="space-y-4 rounded-sm border border-border bg-card p-6 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-border pb-3">
+              <Building2 className="h-4 w-4 text-gold" />
+              <h2 className="font-display text-xl">Business &amp; Tax Invoice Details</h2>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              These details are printed on customer invoices and official receipts.
+            </p>
+
+            <div>
+              <label className={label} htmlFor="biz-legal">Legal Entity / Brand Name</label>
+              <input id="biz-legal" className={field} value={legalName} onChange={(e) => setLegalName(e.target.value)} required />
+            </div>
+
+            <div>
+              <label className={label} htmlFor="biz-owner">Founder &amp; Chief Practitioner</label>
+              <input id="biz-owner" className={field} value={ownerName} onChange={(e) => setOwnerName(e.target.value)} required />
+            </div>
+
+            <div>
+              <label className={label} htmlFor="biz-addr">Clinic Physical Address</label>
+              <textarea
+                id="biz-addr"
+                rows={2}
+                className="mt-2 w-full rounded-sm border border-input bg-card p-3 text-sm focus:ring-1 focus:ring-primary"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={label} htmlFor="biz-phone">Clinic Support Phone</label>
+                <input id="biz-phone" className={field} value={bizPhone} onChange={(e) => setBizPhone(e.target.value)} required />
+              </div>
+              <div>
+                <label className={label} htmlFor="biz-email">Official Support Email</label>
+                <input id="biz-email" type="email" className={field} value={bizEmail} onChange={(e) => setBizEmail(e.target.value)} required />
+              </div>
+            </div>
+
+            <div>
+              <label className={label} htmlFor="biz-gst">GSTIN (Optional — Only if GST Registered)</label>
+              <input
+                id="biz-gst"
+                className={field}
+                placeholder="e.g. 06AAAAA0000A1Z5 (Leave blank if unverified)"
+                value={gstin}
+                onChange={(e) => setGstin(e.target.value)}
+              />
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Invoices only display a GSTIN if provided here. No placeholder GSTIN is ever shown.
+              </p>
+            </div>
+
+            <button type="submit" className="rounded-sm bg-primary px-6 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground hover:opacity-90">
+              Save Business Details
+            </button>
+          </form>
+
+          {/* Shipping Rates */}
+          <form onSubmit={saveShipping} className="space-y-4 rounded-sm border border-border bg-card p-6 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-border pb-3">
+              <Truck className="h-4 w-4 text-gold" />
+              <h2 className="font-display text-xl">Shipping &amp; Delivery Rates</h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={label} htmlFor="sh-flat">Standard Delivery (₹)</label>
+                <input id="sh-flat" type="number" min="0" className={field} value={flatRate} onChange={(e) => setFlatRate(e.target.value)} />
+              </div>
+              <div>
+                <label className={label} htmlFor="sh-free">Free Delivery Above (₹)</label>
+                <input id="sh-free" type="number" min="0" className={field} value={freeAbove} onChange={(e) => setFreeAbove(e.target.value)} />
+              </div>
+            </div>
+            <div>
+              <label className={label} htmlFor="sh-note">Delivery Note Shown at Checkout</label>
+              <input id="sh-note" className={field} maxLength={200} value={deliveryNote} onChange={(e) => setDeliveryNote(e.target.value)} />
+            </div>
+            <button type="submit" className="rounded-sm bg-primary px-6 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground hover:opacity-90">
+              Save Delivery Charges
+            </button>
+          </form>
         </div>
-        <fieldset>
-          <legend className={label}>Working days</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {dayNames.map((d, i) => (
-              <label key={d} className="flex items-center gap-2 rounded-sm border border-border px-3 py-2 text-xs">
+
+        {/* Right Column: Notifications, Payments & Coupons */}
+        <div className="space-y-8">
+          {/* Notification & Payment Settings */}
+          <form onSubmit={saveNotificationSettings} className="space-y-4 rounded-sm border border-border bg-card p-6 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-border pb-3">
+              <Bell className="h-4 w-4 text-gold" />
+              <h2 className="font-display text-xl">Order Alerts &amp; Payment Toggles</h2>
+            </div>
+
+            <div>
+              <label className={label} htmlFor="n-emails">Admin Dispatch Alert Emails</label>
+              <input
+                id="n-emails"
+                className={field}
+                placeholder="info@vaidhbharti.com, orders@vaidhbharti.com"
+                value={adminEmails}
+                onChange={(e) => setAdminEmails(e.target.value)}
+              />
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Receives automated notifications when new orders are placed. Comma separated.
+              </p>
+            </div>
+
+            <div>
+              <label className={label} htmlFor="n-phone">WhatsApp Business Number</label>
+              <input
+                id="n-phone"
+                className={field}
+                value={whatsappPhone}
+                onChange={(e) => setWhatsappPhone(e.target.value)}
+              />
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Pre-populated for customer WhatsApp confirmation buttons.
+              </p>
+            </div>
+
+            <div className="space-y-2 pt-2 border-t border-border">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={days.includes(i)}
-                  onChange={(e) => setDays((prev) => (e.target.checked ? [...prev, i].sort() : prev.filter((x) => x !== i)))}
+                  checked={codEnabled}
+                  onChange={(e) => setCodEnabled(e.target.checked)}
+                  className="rounded-xs"
                 />
-                {d.slice(0, 3)}
+                <span>Enable Cash on Delivery (COD) at checkout</span>
               </label>
-            ))}
+
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={onlineEnabled}
+                  onChange={(e) => setOnlineEnabled(e.target.checked)}
+                  className="rounded-xs"
+                />
+                <span>Enable Razorpay Online (UPI, Cards, NetBanking)</span>
+              </label>
+            </div>
+
+            <button type="submit" className="rounded-sm bg-primary px-6 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground hover:opacity-90">
+              Save Notification Settings
+            </button>
+          </form>
+
+          {/* Consultation Fee & GST */}
+          <form onSubmit={saveConsult} className="space-y-4 rounded-sm border border-border bg-card p-6 shadow-xs">
+            <div className="flex items-center gap-2 border-b border-border pb-3">
+              <Calendar className="h-4 w-4 text-gold" />
+              <h2 className="font-display text-xl">Consultation Fee &amp; Tax</h2>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={label} htmlFor="cf-fee">Base Fee (₹)</label>
+                <input id="cf-fee" type="number" min="0" className={field} value={fee} onChange={(e) => setFee(e.target.value)} />
+              </div>
+              <div>
+                <label className={label} htmlFor="cf-gst">GST (%)</label>
+                <input id="cf-gst" type="number" min="0" max="28" className={field} value={gstPercent} onChange={(e) => setGstPercent(e.target.value)} />
+              </div>
+            </div>
+            <button type="submit" className="rounded-sm bg-primary px-6 py-3.5 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground hover:opacity-90">
+              Save Consultation Fee
+            </button>
+          </form>
+
+          {/* Coupons */}
+          <div className="rounded-sm border border-border bg-card p-6 shadow-xs space-y-4">
+            <div className="flex items-center gap-2 border-b border-border pb-3">
+              <Tag className="h-4 w-4 text-gold" />
+              <h2 className="font-display text-xl">Discount Coupons</h2>
+            </div>
+
+            <form onSubmit={addCoupon} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={label} htmlFor="c-code">Coupon Code</label>
+                  <input id="c-code" className={field} value={code} maxLength={24} placeholder="e.g. AYURVEDA10" onChange={(e) => setCode(e.target.value)} />
+                </div>
+                <div>
+                  <label className={label} htmlFor="c-type">Type</label>
+                  <select id="c-type" className={field} value={type} onChange={(e) => setType(e.target.value)}>
+                    <option value="percent">Percentage Off (%)</option>
+                    <option value="fixed">Fixed Amount Off (₹)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={label} htmlFor="c-value">Value</label>
+                  <input id="c-value" type="number" min="0" className={field} value={value} onChange={(e) => setValue(e.target.value)} />
+                </div>
+                <div>
+                  <label className={label} htmlFor="c-min">Min Order (₹)</label>
+                  <input id="c-min" type="number" min="0" className={field} value={minAmount} onChange={(e) => setMinAmount(e.target.value)} />
+                </div>
+              </div>
+              <button type="submit" className="rounded-sm bg-primary px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary-foreground hover:opacity-90">
+                Create Coupon
+              </button>
+            </form>
+
+            <ul className="divide-y divide-border border border-border text-xs">
+              {coupons.data?.length ? (
+                coupons.data.map((c) => (
+                  <li key={c.id} className="flex items-center justify-between gap-3 p-3">
+                    <span>
+                      <strong className="font-mono text-sm">{c.code}</strong> ·{" "}
+                      {c.discount_type === "percent" ? `${c.discount_value}%` : `₹${c.discount_value}`} off
+                      {c.min_order_amount ? ` (min ₹${c.min_order_amount})` : ""}
+                    </span>
+                    <button
+                      type="button"
+                      className="text-[10px] uppercase tracking-[0.14em] font-semibold text-muted-foreground hover:text-foreground"
+                      onClick={async () => {
+                        await supabase.from("coupons").update({ is_active: !c.is_active }).eq("id", c.id);
+                        void coupons.refetch();
+                      }}
+                    >
+                      {c.is_active ? "Disable" : "Enable"}
+                    </button>
+                  </li>
+                ))
+              ) : (
+                <li className="p-3 text-muted-foreground">No coupons created yet.</li>
+              )}
+            </ul>
           </div>
-        </fieldset>
-        <div>
-          <label className={label} htmlFor="s-types">Consultation types (comma separated)</label>
-          <input id="s-types" className={field} value={types} onChange={(e) => setTypes(e.target.value)} />
         </div>
-        <div>
-          <label className={label} htmlFor="s-blocked">Blocked dates (YYYY-MM-DD, comma separated)</label>
-          <input id="s-blocked" className={field} value={blocked} onChange={(e) => setBlocked(e.target.value)} />
-        </div>
-        <button type="submit" className="rounded-sm bg-primary px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground">
-          Save schedule
-        </button>
-      </form>
-
-      <div className="space-y-6">
-        <form onSubmit={saveConsult} className="space-y-4 border border-border p-6">
-          <h2 className="font-display text-2xl">Consultation fee</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={label} htmlFor="cf-fee">Fee (₹)</label>
-              <input id="cf-fee" type="number" min="0" className={field} value={fee} onChange={(e) => setFee(e.target.value)} />
-            </div>
-            <div>
-              <label className={label} htmlFor="cf-gst">GST (%)</label>
-              <input id="cf-gst" type="number" min="0" max="28" className={field} value={gstPercent} onChange={(e) => setGstPercent(e.target.value)} />
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground">Patients pay ₹{feeTotal} online to confirm a slot.</p>
-          <button type="submit" className="rounded-sm bg-primary px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground">
-            Save consultation fee
-          </button>
-        </form>
-
-        <form onSubmit={saveShipping} className="space-y-4 border border-border p-6">
-          <h2 className="font-display text-2xl">Delivery charges</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={label} htmlFor="sh-flat">Delivery charge (₹)</label>
-              <input id="sh-flat" type="number" min="0" className={field} value={flatRate} onChange={(e) => setFlatRate(e.target.value)} />
-            </div>
-            <div>
-              <label className={label} htmlFor="sh-free">Free delivery above (₹)</label>
-              <input id="sh-free" type="number" min="0" className={field} value={freeAbove} onChange={(e) => setFreeAbove(e.target.value)} />
-            </div>
-          </div>
-          <div>
-            <label className={label} htmlFor="sh-note">Delivery note shown at checkout</label>
-            <input id="sh-note" className={field} maxLength={200} value={deliveryNote} onChange={(e) => setDeliveryNote(e.target.value)} />
-          </div>
-          <button type="submit" className="rounded-sm bg-primary px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground">
-            Save delivery charges
-          </button>
-        </form>
-
-        <form onSubmit={addCoupon} className="space-y-4 border border-border p-6">
-          <h2 className="font-display text-2xl">Coupons</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={label} htmlFor="c-code">Code</label>
-              <input id="c-code" className={field} value={code} maxLength={24} onChange={(e) => setCode(e.target.value)} />
-            </div>
-            <div>
-              <label className={label} htmlFor="c-type">Type</label>
-              <select id="c-type" className={field} value={type} onChange={(e) => setType(e.target.value)}>
-                <option value="percent">Percent off</option>
-                <option value="fixed">Fixed ₹ off</option>
-              </select>
-            </div>
-            <div>
-              <label className={label} htmlFor="c-value">Value</label>
-              <input id="c-value" type="number" min="0" className={field} value={value} onChange={(e) => setValue(e.target.value)} />
-            </div>
-            <div>
-              <label className={label} htmlFor="c-min">Minimum order ₹</label>
-              <input id="c-min" type="number" min="0" className={field} value={minAmount} onChange={(e) => setMinAmount(e.target.value)} />
-            </div>
-          </div>
-          <button type="submit" className="rounded-sm bg-primary px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-primary-foreground">
-            Add coupon
-          </button>
-        </form>
-
-        <ul className="divide-y divide-border border border-border">
-          {coupons.data?.length ? (
-            coupons.data.map((c) => (
-              <li key={c.id} className="flex items-center justify-between gap-3 p-4 text-sm">
-                <span>
-                  <strong>{c.code}</strong> · {c.discount_type === "percent" ? `${c.discount_value}%` : `₹${c.discount_value}`} off
-                  {c.min_order_amount ? ` · min ₹${c.min_order_amount}` : ""}
-                </span>
-                <button
-                  type="button"
-                  className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground hover:text-destructive"
-                  onClick={async () => {
-                    await supabase.from("coupons").update({ is_active: !c.is_active }).eq("id", c.id);
-                    void coupons.refetch();
-                  }}
-                >
-                  {c.is_active ? "Disable" : "Enable"}
-                </button>
-              </li>
-            ))
-          ) : (
-            <li className="p-4 text-sm text-muted-foreground">No coupons yet.</li>
-          )}
-        </ul>
       </div>
     </div>
   );
